@@ -23,7 +23,7 @@ public class BlasticFantastic extends BasicGame{
     @Override
     public void init(GameContainer gc)
 			throws SlickException {
-        plane = new Image("xvsmmmmmmmmmmmmmmmmmmdata/plane.png");
+        plane = new Image("xvsxvddata/plane.png");
         land = new Image("data/land.jpg");
     }
  
