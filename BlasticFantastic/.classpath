@@ -7,7 +7,11 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre73_2bit"/>
 	<classpathentry kind="lib" path="externalLib/jbox2d-library-2.1.2.2-jar-with-dependencies.jar"/>
-	<classpathentry kind="lib" path="externalLib/lwjgl.jar"/>
+	<classpathentry kind="lib" path="externalLib/lwjgl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="BlasticFantastic/native32bitwindows"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="externalLib/slick-util.jar"/>
 	<classpathentry kind="lib" path="externalLib/slick.jar"/>
 	<classpathentry kind="output" path="bin"/>

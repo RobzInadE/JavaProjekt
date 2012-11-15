@@ -2,6 +2,11 @@
 <map version="1.0" orientation="orthogonal" width="50" height="38" tilewidth="16" tileheight="16">
  <tileset firstgid="1" name="collision" tilewidth="16" tileheight="16">
   <image source="collision.png" trans="ff00ff" width="80" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="gid" value="1"/>
+   </properties>
+  </tile>
  </tileset>
  <tileset firstgid="11" name="tiles" tilewidth="16" tileheight="16">
   <image source="tiles.png" trans="ff00ff" width="128" height="64"/>
@@ -11,7 +16,7 @@
    H4sIAAAAAAAAC+3UQQoAIAgAQf3/p3tB0aFskx3w7iIYIUmSxJCvFzggww4SO1jsYLGDxQ4WO1jsYJl15GKq7ezR/R6/sYPldkfVr/AeLHawdOvoMANauE/bsB0AAA==
   </data>
  </layer>
- <layer name="tiles" width="50" height="38">
+ <layer name="tiles" width="50" height="38" visible="0">
   <data encoding="base64" compression="gzip">
    H4sIAAAAAAAAC+3TOwqAMBQF0fR+alsR3f8SfYWFCBGLqJMwB27/hpCUJEmSGKa/DyhgTnaQ2MFiB4sdLHaw2MFiB0uuo4v1x4bTxu9Ou73lekfr71EbO1je7njyR0vwPVjsYGmpY4mtlW+L7ex8xHewHQAA
   </data>
