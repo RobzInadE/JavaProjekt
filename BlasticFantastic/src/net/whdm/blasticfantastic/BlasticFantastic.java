@@ -1,4 +1,6 @@
 package net.whdm.blasticfantastic;
+import java.util.ArrayList;
+
 import org.jbox2d.collision.ContactID;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -29,10 +31,10 @@ public class BlasticFantastic extends BasicGame {
     int y = 100;
     int scale = 1;
     public int displayList;
-    public World world;
+    public static World world;
     public float timeStep;
     public int velocityIterations, positionIterations;
-    public Body body;
+    private ArrayList<Bullet> bulletList;
  
     public BlasticFantastic()
     {
@@ -41,16 +43,19 @@ public class BlasticFantastic extends BasicGame {
  
     @Override
     public void init(GameContainer gc) throws SlickException {
-        viewport = new Rectangle(0, 0, 1024, 600);
-        runningMan1 = new Player(5, 25, 4, 12, 32, 40, "data/eri3.png", 50);
-        runningMan1.getAnimation("idle").start();
-        
+        viewport = new Rectangle(0, 0, 1024, 600);        
         map1 = new TiledMap("data/2.tmx");
+        
+        this.bulletList = new ArrayList();
         
         //Create our World
         Vec2 gravity = new Vec2(0, 100);
         boolean doSleep = true;
         world = new World(gravity,doSleep);
+        
+        //Player 1
+        runningMan1 = new Player(5, 25, 4, 12, 32, 40, "data/eri3.png", 50);
+        runningMan1.getAnimation("idle").start();
         
         //Get collision layer from map
         int collisionLayerIndex = map1.getLayerIndex("collision");
@@ -70,23 +75,6 @@ public class BlasticFantastic extends BasicGame {
         }
         
         //System.out.println(tiles);
-        
-        // Dynamic Body
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
-        bodyDef.position.set(runningMan1.x, runningMan1.y);
-        body = world.createBody(bodyDef);
-        PolygonShape dynamicBox = new PolygonShape();
-        //dynamicBox.setAsBox(1f, 1.25f, new Vec2(0.5f, -0.17f), 0);
-        dynamicBox.setAsBox(2, 2.5f, new Vec2(2, 2.5f), 0);
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = dynamicBox;
-        fixtureDef.density=1;
-        fixtureDef.friction=5;
-        
-        //fixtureDef.restitution=0.5f;
-        body.createFixture(fixtureDef);
-        body.setFixedRotation(true);
 
         // Setup world
         timeStep = 1.0f/60.0f;
@@ -95,7 +83,7 @@ public class BlasticFantastic extends BasicGame {
         
         //Physics debug draw.
         
-        //Slick2dDebugDraw sDD = new Slick2dDebugDraw(gc.getGraphics(), gc); // arg0 is the GameContainer in this case, I put this code in my init method
+        //Slick2dDebugDraw sDD = new Slick2dDebugDraw(gc.getGraphics(), gc);
         //sDD.setFlags(0x0001); //Setting the debug draw flags,
         //world.setDebugDraw(sDD);
         
@@ -106,26 +94,33 @@ public class BlasticFantastic extends BasicGame {
     public void update(GameContainer gc, int delta) throws SlickException {
     	if (gc.getInput().isKeyDown(Input.KEY_RIGHT)) {
     		runningMan1.getAnimation("right").start();
-    		body.setLinearVelocity(new Vec2(1.5f*delta, body.getLinearVelocity().y));
+    		runningMan1.getBody().setLinearVelocity(new Vec2(1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
     		
     	}
     	else if (gc.getInput().isKeyDown(Input.KEY_LEFT)) {
     		runningMan1.getAnimation("left").start();
-    		body.setLinearVelocity(new Vec2(-1.5f*delta, body.getLinearVelocity().y));
+    		runningMan1.getBody().setLinearVelocity(new Vec2(-1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
     	}
     	else  {
     		runningMan1.getAnimation("idle").start();
     	}
-    	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(body.getLinearVelocity().y)==0) {
+    	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(runningMan1.getBody().getLinearVelocity().y)==0) {
     		//if(!gc.getInput().isKeyDown(Input.KEY_LEFT))
-    		body.setLinearVelocity(new Vec2(body.getLinearVelocity().x, -3*delta));
+    		runningMan1.getBody().setLinearVelocity(new Vec2(runningMan1.getBody().getLinearVelocity().x, -3*delta));
     	}
+    	
+    	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
+    		this.bulletList.add(new Bullet(runningMan1.x, runningMan1.y, runningMan1.currentDirection()));
+    	}
+    	
     	world.step(timeStep, velocityIterations, positionIterations);
     	//System.out.println(body.getLinearVelocity().y);
     	
     	//change his location
-        runningMan1.sX(body.getPosition().x);
-        runningMan1.sY(body.getPosition().y);
+        runningMan1.updateLoc();
+        for(Bullet b : this.bulletList) {
+        	b.updateLoc();
+        }
         
         //change camera location
         viewport.setX((runningMan1.x*8));
@@ -141,7 +136,7 @@ public class BlasticFantastic extends BasicGame {
     	
     	g.translate(512-viewport.getX(), 300-viewport.getY());
     	map1.render(0, 0);
-    	//g.setClip(viewport);
+    	g.setClip(0, 0, 1280, 720);
     	
     	if(runningMan1.currentDirection()==0) {
     		//Player is idle, animate idle.
@@ -156,7 +151,9 @@ public class BlasticFantastic extends BasicGame {
     		g.drawAnimation(runningMan1.getAnimation("right"), runningMan1.x*8, runningMan1.y*8);
     	}
     	//System.out.println(body.getPosition().y);
-    	
+	    for(Bullet b : this.bulletList) {
+	    	b.getImg().draw(b.x*8, b.y*8);
+	    }
     	//world.drawDebugData();
     	
  
