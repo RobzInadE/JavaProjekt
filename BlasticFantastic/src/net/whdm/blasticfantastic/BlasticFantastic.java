@@ -1,24 +1,19 @@
 package net.whdm.blasticfantastic;
 import java.util.ArrayList;
 
-import org.jbox2d.collision.ContactID;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
-import org.jbox2d.dynamics.BodyType;
-import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.tiled.TiledMap;
  
 public class BlasticFantastic extends BasicGame {
@@ -46,12 +41,11 @@ public class BlasticFantastic extends BasicGame {
         viewport = new Rectangle(0, 0, 1024, 600);        
         map1 = new TiledMap("data/2.tmx");
         
-        this.bulletList = new ArrayList();
+        this.bulletList = new ArrayList<Bullet>();
         
         //Create our World
         Vec2 gravity = new Vec2(0, 100);
-        boolean doSleep = true;
-        world = new World(gravity,doSleep);
+        world = new World(gravity);
         
         //Player 1
         runningMan1 = new Player(5, 25, 4, 12, 32, 40, "data/eri3.png", 50);
@@ -80,6 +74,9 @@ public class BlasticFantastic extends BasicGame {
         timeStep = 1.0f/60.0f;
         velocityIterations = 6;
         positionIterations = 2;
+        
+        world.setContactListener(new BFContactListener());
+        
         
         //Physics debug draw.
         
@@ -114,6 +111,7 @@ public class BlasticFantastic extends BasicGame {
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
+    	//bulletWorld.step(timeStep, velocityIterations, positionIterations);
     	//System.out.println(body.getLinearVelocity().y);
     	
     	//change his location

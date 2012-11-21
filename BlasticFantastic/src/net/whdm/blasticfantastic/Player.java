@@ -40,20 +40,20 @@ public class Player extends BodyDef{
 		this.player_running_left = new Animation();
 		
 		//Create idle animation
-		for (int frame=0;frame<idleTiles;frame++) {
-			player_idle.addFrame(sprites.getSprite(frame,0), delay);
+		for (int frame=0;frame<this.idleTiles;frame++) {
+			player_idle.addFrame(sprites.getSprite(frame,0), this.delay);
 		}
 		//Loop back and forth
 		player_idle.setPingPong(true);
 		
 		//Create running right
-		for (int frame=0;frame<runningTiles;frame++) {
-			player_running_right.addFrame(sprites.getSprite(frame,1), delay);
+		for (int frame=0;frame<this.runningTiles;frame++) {
+			player_running_right.addFrame(sprites.getSprite(frame,1), this.delay);
 		}
 		
 		//Create running left (Mirrored.)
-		for (int frame=runningTiles-1;frame>0;frame--) {
-			player_running_left.addFrame(sprites.getSprite(frame,2), delay);
+		for (int frame=this.runningTiles-1;frame>0;frame--) {
+			player_running_left.addFrame(sprites.getSprite(frame,2), this.delay);
 		}
 		
 		// Dynamic Body
