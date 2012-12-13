@@ -19,9 +19,10 @@ public class Player extends BodyDef{
 	private int tileHeight;
 	private String spritesheet;
 	private SpriteSheet sprites;
-	private Animation player_running_left, player_running_right, player_idle;
+	private Animation player_running_left, player_running_right, player_idle_left, player_idle_right;
 	private int delay;
-	private int direction;
+	public static int IDLE_LEFT = -1, IDLE_RIGHT = -2, RUNNING_LEFT = 1, RUNNING_RIGHT = 2;
+	private int lastDirection = IDLE_LEFT;
 	private Body body;
 	
 	Player(float x, float y, int idleTiles, int runningTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
@@ -35,16 +36,21 @@ public class Player extends BodyDef{
 		this.delay = delay;
 		this.sprites = new SpriteSheet(this.spritesheet,this.tileWidth,this.tileHeight);
 		
-		this.player_idle = new Animation();
+		this.player_idle_left = new Animation();
+		this.player_idle_right = new Animation();
 		this.player_running_right = new Animation();
 		this.player_running_left = new Animation();
 		
 		//Create idle animation
 		for (int frame=0;frame<this.idleTiles;frame++) {
-			player_idle.addFrame(sprites.getSprite(frame,0), this.delay);
+			player_idle_right.addFrame(sprites.getSprite(frame,0), this.delay);
+		}
+		for (int frame=4;frame<this.idleTiles*2;frame++) {
+			player_idle_left.addFrame(sprites.getSprite(frame,0), this.delay);
 		}
 		//Loop back and forth
-		player_idle.setPingPong(true);
+		player_idle_left.setPingPong(true);
+		player_idle_right.setPingPong(true);
 		
 		//Create running right
 		for (int frame=0;frame<this.runningTiles;frame++) {
@@ -72,23 +78,31 @@ public class Player extends BodyDef{
         this.body.setFixedRotation(true);
 		
 	}
-	public Animation getAnimation(String state) {
-		if(state=="right") {
-			this.direction = 3; 
+	public Animation getAnimation(int state) {
+		if(state==RUNNING_RIGHT) {
 			return this.player_running_right;
 		}
-		else if(state=="idle") {
-			this.direction = 0;
-			return this.player_idle;
-		}
-		else if(state=="left") {
-			this.direction = 1;
+		else if(state==RUNNING_LEFT) {
 			return this.player_running_left;
 		}
+		
+		else if(state==IDLE_RIGHT) {
+			return this.player_idle_right;
+		}
+		else if(state==IDLE_LEFT) {
+			return this.player_idle_left;
+		}
+		
 		else {
-			this.direction = 0;
 			return new Animation();
 		}
+	}
+	
+	public int direction() {
+		return this.lastDirection;
+	}
+	public void direction(int x) {
+		lastDirection = x;
 	}
 	
 	public Body getBody() {
@@ -97,9 +111,6 @@ public class Player extends BodyDef{
 	public void updateLoc() {
 		this.x = this.body.getPosition().x;
 		this.y = this.body.getPosition().y;
-	}
-	public int currentDirection() {
-		return this.direction;
 	}
 	
 	

@@ -1,5 +1,6 @@
 package net.whdm.blasticfantastic;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -29,7 +30,8 @@ public class BlasticFantastic extends BasicGame {
     public static World world;
     public float timeStep;
     public int velocityIterations, positionIterations;
-    private ArrayList<Bullet> bulletList;
+    public static volatile ArrayList<Bullet> bulletList;
+    public static Random random = new Random(System.currentTimeMillis());
  
     public BlasticFantastic()
     {
@@ -41,15 +43,15 @@ public class BlasticFantastic extends BasicGame {
         viewport = new Rectangle(0, 0, 1024, 600);        
         map1 = new TiledMap("data/2.tmx");
         
-        this.bulletList = new ArrayList<Bullet>();
+        bulletList = new ArrayList<Bullet>();
         
         //Create our World
         Vec2 gravity = new Vec2(0, 100);
         world = new World(gravity);
         
         //Player 1
-        runningMan1 = new Player(5, 25, 4, 12, 32, 40, "data/eri3.png", 50);
-        runningMan1.getAnimation("idle").start();
+        runningMan1 = new Player(5, 25, 4, 12, 40, 40, "data/temp.png", 50);
+        runningMan1.getAnimation(Player.IDLE_LEFT).start();
         
         //Get collision layer from map
         int collisionLayerIndex = map1.getLayerIndex("collision");
@@ -90,24 +92,34 @@ public class BlasticFantastic extends BasicGame {
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
     	if (gc.getInput().isKeyDown(Input.KEY_RIGHT)) {
-    		runningMan1.getAnimation("right").start();
+    		runningMan1.getAnimation(Player.RUNNING_RIGHT).start();
+    		runningMan1.direction(Player.RUNNING_RIGHT);
     		runningMan1.getBody().setLinearVelocity(new Vec2(1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
     		
     	}
     	else if (gc.getInput().isKeyDown(Input.KEY_LEFT)) {
-    		runningMan1.getAnimation("left").start();
+    		runningMan1.getAnimation(Player.RUNNING_LEFT).start();
+    		runningMan1.direction(Player.RUNNING_LEFT);
     		runningMan1.getBody().setLinearVelocity(new Vec2(-1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
     	}
     	else  {
-    		runningMan1.getAnimation("idle").start();
+    		System.out.println(runningMan1.direction());
+    		if(runningMan1.direction()==Player.IDLE_RIGHT || runningMan1.direction()==Player.RUNNING_RIGHT) {
+    			runningMan1.direction(Player.IDLE_RIGHT);
+    			runningMan1.getAnimation(Player.IDLE_RIGHT).start();
+    		}
+    		else {
+    			runningMan1.direction(Player.IDLE_LEFT);
+    			runningMan1.getAnimation(Player.IDLE_LEFT).start();
+    		}
     	}
     	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(runningMan1.getBody().getLinearVelocity().y)==0) {
-    		//if(!gc.getInput().isKeyDown(Input.KEY_LEFT))
     		runningMan1.getBody().setLinearVelocity(new Vec2(runningMan1.getBody().getLinearVelocity().x, -3*delta));
     	}
     	
     	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
-    		this.bulletList.add(new Bullet(runningMan1.x, runningMan1.y, runningMan1.currentDirection()));
+    		//Fire new bullet!
+    		bulletList.add(new Bullet(runningMan1.x, runningMan1.y, runningMan1.direction()));
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
@@ -116,7 +128,7 @@ public class BlasticFantastic extends BasicGame {
     	
     	//change his location
         runningMan1.updateLoc();
-        for(Bullet b : this.bulletList) {
+        for(Bullet b : bulletList) {
         	b.updateLoc();
         }
         
@@ -136,20 +148,24 @@ public class BlasticFantastic extends BasicGame {
     	map1.render(0, 0);
     	g.setClip(0, 0, 1280, 720);
     	
-    	if(runningMan1.currentDirection()==0) {
+    	if(runningMan1.direction()==Player.IDLE_RIGHT) {
     		//Player is idle, animate idle.
-    		g.drawAnimation(runningMan1.getAnimation("idle"), runningMan1.x*8, runningMan1.y*8);
+    		g.drawAnimation(runningMan1.getAnimation(Player.IDLE_RIGHT), runningMan1.x*8, runningMan1.y*8);
     	}
-    	else if(runningMan1.currentDirection()==1) {
+    	else if(runningMan1.direction()==Player.IDLE_LEFT) {
+    		//Player is idle, animate idle.
+    		g.drawAnimation(runningMan1.getAnimation(Player.IDLE_LEFT), runningMan1.x*8, runningMan1.y*8);
+    	}
+    	else if(runningMan1.direction()==Player.RUNNING_LEFT) {
     		//Player is running left, animate left.
-    		g.drawAnimation(runningMan1.getAnimation("left"), runningMan1.x*8, runningMan1.y*8);
+    		g.drawAnimation(runningMan1.getAnimation(Player.RUNNING_LEFT), runningMan1.x*8, runningMan1.y*8);
     	}
-    	else if(runningMan1.currentDirection()==3) {
+    	else if(runningMan1.direction()==Player.RUNNING_RIGHT) {
     		//Player is running right, animate right.
-    		g.drawAnimation(runningMan1.getAnimation("right"), runningMan1.x*8, runningMan1.y*8);
+    		g.drawAnimation(runningMan1.getAnimation(Player.RUNNING_RIGHT), runningMan1.x*8, runningMan1.y*8);
     	}
     	//System.out.println(body.getPosition().y);
-	    for(Bullet b : this.bulletList) {
+	    for(Bullet b : bulletList) {
 	    	b.getImg().draw(b.x*8, b.y*8);
 	    }
     	//world.drawDebugData();
