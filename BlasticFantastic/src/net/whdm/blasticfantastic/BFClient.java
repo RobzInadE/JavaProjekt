@@ -12,8 +12,8 @@ public class BFClient implements Runnable {
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
 	private Socket thisSocket;
-	private volatile Player thisPlayer;
-	public BFClient(Player p, String server, int port) {
+	private volatile Player hisPlayer, myPlayer;
+	public BFClient(Player p1, Player p2, String server, int port) {
 		try {
 			System.out.println("Connecting to "+server+" port "+port);
 			thisSocket = new Socket(server, port);
@@ -24,7 +24,8 @@ public class BFClient implements Runnable {
 		try {
 			outStream = new ObjectOutputStream(thisSocket.getOutputStream());
 			inStream = new ObjectInputStream(thisSocket.getInputStream());
-			thisPlayer = p;
+			myPlayer = p1;
+			hisPlayer = p2;
 			new Thread(this).start();
 		} catch (IOException e) {
 			System.err.println("Can't initiate input/output streams to socket");
@@ -50,15 +51,15 @@ public class BFClient implements Runnable {
 			try {
 				Thread.sleep(100);
 				outStream.flush();
-				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), thisPlayer.getX(), thisPlayer.getY(), thisPlayer.direction(), thisPlayer.getBody().getLinearVelocity().x, thisPlayer.getBody().getLinearVelocity().y));
+				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getX(), myPlayer.getY(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
 				Object o;
 				o = inStream.readObject();
 				if(o instanceof BFPlayerPacket) {
 					BFPlayerPacket bfp = (BFPlayerPacket) o;
-					thisPlayer.setX(bfp.xpos());
-					thisPlayer.setY(bfp.ypos());
-					thisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
-					thisPlayer.direction(bfp.direction());
+					hisPlayer.setX(bfp.xpos());
+					hisPlayer.setY(bfp.ypos());
+					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
+					hisPlayer.direction(bfp.direction());
 				}
 			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());

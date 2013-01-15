@@ -99,7 +99,7 @@ public class BlasticFantastic extends BasicGame {
         	//Connecting to someone
         	myPlayer = player2;
         	hisPlayer = player1;
-        	thisClient = new BFClient(hisPlayer, host, port);
+        	thisClient = new BFClient(myPlayer, hisPlayer, host, port);
         	status = "Connected to server";
         }
         else {
@@ -107,7 +107,7 @@ public class BlasticFantastic extends BasicGame {
         	myPlayer = player1;
         	hisPlayer = player2;
         	new BFServer(true);
-        	thisClient = new BFClient(hisPlayer, host, port);
+        	thisClient = new BFClient(myPlayer, hisPlayer, host, port);
         	status = "Local server online";
         }
         
