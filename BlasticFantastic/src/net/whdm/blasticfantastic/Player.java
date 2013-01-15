@@ -11,8 +11,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
 public class Player {
-	public float x;
-	public float y;
+	private volatile float x;
+	private volatile float y;
 	private int idleTiles;
 	private int runningTiles;
 	private int tileWidth;
@@ -23,7 +23,8 @@ public class Player {
 	private int delay;
 	public static int IDLE_LEFT = -1, IDLE_RIGHT = -2, RUNNING_LEFT = 1, RUNNING_RIGHT = 2;
 	private int lastDirection = IDLE_LEFT;
-	private Body body;
+	private volatile Body body;
+	private volatile BodyDef bodyDef;
 	
 	Player(float x, float y, int idleTiles, int runningTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;
@@ -63,7 +64,7 @@ public class Player {
 		}
 		
 		// Dynamic Body
-        BodyDef bodyDef = new BodyDef();
+        bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position.set(this.x, this.y);
         this.body = BlasticFantastic.world.createBody(bodyDef);
@@ -111,6 +112,20 @@ public class Player {
 	public void updateLoc() {
 		this.x = this.body.getPosition().x;
 		this.y = this.body.getPosition().y;
+	}
+	public float getX() {
+		return x;
+	}
+	public float getY() {
+		return y;
+	}
+	public void setX(float x) {
+		this.x = x;
+		this.bodyDef.position.set(x, getY());
+	}
+	public void setY(float y) {
+		this.y = y;
+		this.bodyDef.position.set(getX(), y);
 	}
 	
 	

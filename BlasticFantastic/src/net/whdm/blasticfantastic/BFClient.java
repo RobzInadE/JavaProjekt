@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
+
+import org.jbox2d.common.Vec2;
 
 public class BFClient implements Runnable {
 
 	private ObjectOutputStream outStream;
 	private ObjectInputStream inStream;
 	private Socket thisSocket;
-	private Player thisPlayer;
+	private volatile Player thisPlayer;
 	public BFClient(Player p, String server, int port) {
 		try {
 			System.out.println("Connecting to "+server+" port "+port);
@@ -49,13 +50,15 @@ public class BFClient implements Runnable {
 			try {
 				Thread.sleep(100);
 				outStream.flush();
-				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), thisPlayer.x, thisPlayer.y, thisPlayer.direction(), thisPlayer.getBody().getLinearVelocity().x, thisPlayer.getBody().getLinearVelocity().y));
+				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), thisPlayer.getX(), thisPlayer.getY(), thisPlayer.direction(), thisPlayer.getBody().getLinearVelocity().x, thisPlayer.getBody().getLinearVelocity().y));
 				Object o;
 				o = inStream.readObject();
 				if(o instanceof BFPlayerPacket) {
 					BFPlayerPacket bfp = (BFPlayerPacket) o;
-					thisPlayer.x = bfp.xpos();
-					thisPlayer.y = bfp.ypos();
+					thisPlayer.setX(bfp.xpos());
+					thisPlayer.setY(bfp.ypos());
+					thisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
+					thisPlayer.direction(bfp.direction());
 				}
 			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());

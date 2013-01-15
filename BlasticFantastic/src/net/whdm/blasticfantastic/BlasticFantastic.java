@@ -35,7 +35,7 @@ public class BlasticFantastic extends BasicGame {
     public static Random random = new Random(System.currentTimeMillis());
     private String status;
     private String host = "localhost";
-    private int port = 7777;
+    private int port = 50001;
     private boolean multiplayer = false;
     
     private BFClient thisClient;
@@ -182,7 +182,7 @@ public class BlasticFantastic extends BasicGame {
     	
     	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
     		//Fire new bullet!
-    		bulletList.add(new Bullet(myPlayer.x, myPlayer.y, myPlayer.direction()));
+    		bulletList.add(new Bullet(myPlayer.getX(), myPlayer.getY(), myPlayer.direction()));
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
@@ -197,8 +197,8 @@ public class BlasticFantastic extends BasicGame {
         }
         
         //change camera location
-        viewport.setX((myPlayer.x*8));
-        viewport.setY((myPlayer.y*8));
+        viewport.setX((myPlayer.getX()*8));
+        viewport.setY((myPlayer.getY()*8));
         //System.out.println(player1.y);
         
         
@@ -214,8 +214,8 @@ public class BlasticFantastic extends BasicGame {
     	g.translate(512-viewport.getX(), 300-viewport.getY());
     	map1.render(0, 0);
     	g.setClip(0, 0, 1280, 720);
-    	g.drawAnimation(player1.getAnimation(player1.direction()), player1.x*8, player1.y*8);
-    	g.drawAnimation(player2.getAnimation(player2.direction()), player2.x*8, player2.y*8);
+    	g.drawAnimation(player1.getAnimation(player1.direction()), player1.getX()*8, player1.getY()*8);
+    	g.drawAnimation(player2.getAnimation(player2.direction()), player2.getX()*8, player2.getY()*8);
     	
 	    for(Bullet b : bulletList) {
 	    	b.getImg().draw(b.x*8, b.y*8);
