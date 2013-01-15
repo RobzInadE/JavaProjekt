@@ -2,18 +2,20 @@ package net.whdm.blasticfantastic;
 
 import java.io.Serializable;
 
+import org.jbox2d.common.Vec2;
+
 public class BFPlayerPacket implements Serializable{
 
 	private static final long serialVersionUID = -569804796318003059L;
 	
-	private float xpos, ypos, vspeed, hspeed;
+	private float vspeed, hspeed;
+	private Vec2 pos;
 	private int direction;
 	private String who;
-	public BFPlayerPacket(String who, float xpos, float ypos, int direction, float vspeed, float hspeed) {
+	public BFPlayerPacket(String who, Vec2 pos, int direction, float vspeed, float hspeed) {
 		this.who = who;
 		this.direction = direction;
-		this.xpos = xpos;
-		this.ypos = ypos;
+		this.pos = pos;
 		this.vspeed = vspeed;
 		this.hspeed = hspeed;
 	}
@@ -23,11 +25,9 @@ public class BFPlayerPacket implements Serializable{
 	public int direction() {
 		return direction;
 	}
-	public float xpos() {
-		return xpos;
-	}
-	public float ypos() {
-		return ypos;
+	
+	public Vec2 getPos() {
+		return pos;
 	}
 	
 	public float vspeed() {
