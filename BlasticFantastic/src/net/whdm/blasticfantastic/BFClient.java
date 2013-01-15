@@ -14,11 +14,11 @@ public class BFClient implements Runnable {
 	private Player thisPlayer;
 	public BFClient(Player p, String server, int port) {
 		try {
-			System.out.println("Connecting");
+			System.out.println("Connecting to "+server+" port "+port);
 			thisSocket = new Socket(server, port);
 			System.out.println("Connected!");
 		} catch (IOException e) {
-			System.err.println("Can't connect!");
+			System.err.println("Can't connect! " + e.getMessage());
 		}
 		try {
 			outStream = new ObjectOutputStream(thisSocket.getOutputStream());

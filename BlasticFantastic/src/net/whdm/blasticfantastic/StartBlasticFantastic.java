@@ -9,6 +9,7 @@ public class StartBlasticFantastic {
 		Scanner in = new Scanner(System.in);
 		
 		int a = in.nextInt();
+		in.nextLine();
 		
 		switch(a) {
 		case 1: {
@@ -17,7 +18,6 @@ public class StartBlasticFantastic {
 		}
 		case 2: {
 			System.out.println("Enter host:");
-			in.next();
 			String b = in.nextLine();
 			System.out.println("Enter port:");
 			int c = in.nextInt();
