@@ -11,9 +11,11 @@ public class BFClientConnection implements Runnable{
 	private ObjectOutputStream serverOut;
 	private ObjectInputStream serverIn;
 	private BFListener thisBfl;
+	private String who;
 	public BFClientConnection(Socket s, BFListener bfl) {
 		thisConnection = s;
 		thisBfl = bfl;
+		this.who = s.getRemoteSocketAddress().toString();
 		try {
 			serverOut = new ObjectOutputStream(s.getOutputStream());
 			serverIn = new ObjectInputStream(s.getInputStream());
@@ -29,7 +31,7 @@ public class BFClientConnection implements Runnable{
 				Object o = serverIn.readObject();
 				if(o instanceof BFPlayerPacket) {
 					for(BFClientConnection bfc : thisBfl.getClients()) {
-						bfc.serverOut.writeObject(o);
+						if(who!=bfc.who)bfc.serverOut.writeObject(o);
 					}
 				}
 				//System.out.println("Heartbeat");

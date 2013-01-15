@@ -1,5 +1,4 @@
 package net.whdm.blasticfantastic;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -19,10 +18,11 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.tiled.TiledMap;
  
 public class BlasticFantastic extends BasicGame {
- 
     Rectangle viewport;
-    Player runningMan1;
-    Animation runningMan1anim;
+    public volatile Player player1;
+    public volatile Player player2;
+    public volatile Player myPlayer, hisPlayer;
+    Animation player1anim;
     TiledMap map1;
     int x = 100;
     int y = 100;
@@ -34,16 +34,47 @@ public class BlasticFantastic extends BasicGame {
     public static volatile ArrayList<Bullet> bulletList;
     public static Random random = new Random(System.currentTimeMillis());
     private String status;
+    private String host = "localhost";
+    private int port = 7777;
+    private boolean multiplayer = false;
     
     private BFClient thisClient;
- 
+    
     public BlasticFantastic()
     {
         super("BlasticFantastic 0.1");
+        AppGameContainer app;
+		try {
+			app = new AppGameContainer(this);
+			app.setDisplayMode(1024, 600, false);
+			app.setVSync(true);
+			app.start();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+     
     }
+    public BlasticFantastic(String host, int port) {
+    	super("BlasticFantastic 0.1 MP");
+    	multiplayer = true;
+    	this.host = host;
+    	this.port = port;
+    	AppGameContainer app;
+		try {
+			app = new AppGameContainer(this);
+			app.setDisplayMode(1024, 600, false);
+			app.setVSync(true);
+			app.start();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+    }
+    
+    
  
     @Override
     public void init(GameContainer gc) throws SlickException {
+
         viewport = new Rectangle(0, 0, 1024, 600);        
         map1 = new TiledMap("data/2.tmx");
         
@@ -53,9 +84,32 @@ public class BlasticFantastic extends BasicGame {
         Vec2 gravity = new Vec2(0, 100);
         world = new World(gravity);
         
+        //Setup server
+        
+        
+        
+        
         //Player 1
-        runningMan1 = new Player(5, 25, 4, 12, 40, 40, "data/temp.png", 50);
-        runningMan1.getAnimation(Player.IDLE_LEFT).start();
+        player1 = new Player(5, 180, 4, 12, 40, 40, "data/temp.png", 50);
+        player1.getAnimation(Player.IDLE_LEFT).start();
+        
+        player2 = new Player(15, 180, 4, 12, 40, 40, "data/temp.png", 50);
+        player2.getAnimation(Player.IDLE_LEFT).start();
+        if(multiplayer) {
+        	//Connecting to someone
+        	myPlayer = player2;
+        	hisPlayer = player1;
+        	thisClient = new BFClient(myPlayer, host, port);
+        	status = "Connected to server";
+        }
+        else {
+        	//Connecting to ourselfs
+        	myPlayer = player1;
+        	hisPlayer = player2;
+        	new BFServer(true);
+        	thisClient = new BFClient(myPlayer, host, port);
+        	status = "Local server online";
+        }
         
         //Get collision layer from map
         int collisionLayerIndex = map1.getLayerIndex("collision");
@@ -90,45 +144,45 @@ public class BlasticFantastic extends BasicGame {
         //sDD.setFlags(0x0001); //Setting the debug draw flags,
         //world.setDebugDraw(sDD);
         
-        //Setup server
-        new BFServer(true);
-        thisClient = new BFClient(runningMan1, "localhost", 50001);
-        status = "Local server online";
         
         
+        
+    }
+    
+    public Player getMyPlayer() {
+    	return myPlayer;
     }
  
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
     	if (gc.getInput().isKeyDown(Input.KEY_RIGHT)) {
-    		runningMan1.getAnimation(Player.RUNNING_RIGHT).start();
-    		runningMan1.direction(Player.RUNNING_RIGHT);
-    		runningMan1.getBody().setLinearVelocity(new Vec2(1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
+    		myPlayer.direction(Player.RUNNING_RIGHT);
+    		myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
+    		myPlayer.getBody().setLinearVelocity(new Vec2(1.5f*delta, myPlayer.getBody().getLinearVelocity().y));
     		
     	}
     	else if (gc.getInput().isKeyDown(Input.KEY_LEFT)) {
-    		runningMan1.getAnimation(Player.RUNNING_LEFT).start();
-    		runningMan1.direction(Player.RUNNING_LEFT);
-    		runningMan1.getBody().setLinearVelocity(new Vec2(-1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
+    		myPlayer.direction(Player.RUNNING_LEFT);
+    		myPlayer.getAnimation(Player.RUNNING_LEFT).start();
+    		myPlayer.getBody().setLinearVelocity(new Vec2(-1.5f*delta, myPlayer.getBody().getLinearVelocity().y));
     	}
     	else  {
-    		//System.out.println(runningMan1.direction());
-    		if(runningMan1.direction()==Player.IDLE_RIGHT || runningMan1.direction()==Player.RUNNING_RIGHT) {
-    			runningMan1.direction(Player.IDLE_RIGHT);
-    			runningMan1.getAnimation(Player.IDLE_RIGHT).start();
+    		if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
+    			myPlayer.direction(Player.IDLE_RIGHT);
+    			myPlayer.getAnimation(Player.IDLE_RIGHT).start();
     		}
     		else {
-    			runningMan1.direction(Player.IDLE_LEFT);
-    			runningMan1.getAnimation(Player.IDLE_LEFT).start();
+    			myPlayer.direction(Player.IDLE_LEFT);
+    			myPlayer.getAnimation(Player.IDLE_LEFT).start();
     		}
     	}
-    	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(runningMan1.getBody().getLinearVelocity().y)==0) {
-    		runningMan1.getBody().setLinearVelocity(new Vec2(runningMan1.getBody().getLinearVelocity().x, -3*delta));
+    	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
+    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -3*delta));
     	}
     	
     	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
     		//Fire new bullet!
-    		bulletList.add(new Bullet(runningMan1.x, runningMan1.y, runningMan1.direction()));
+    		bulletList.add(new Bullet(myPlayer.x, myPlayer.y, myPlayer.direction()));
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
@@ -136,15 +190,16 @@ public class BlasticFantastic extends BasicGame {
     	//System.out.println(body.getLinearVelocity().y);
     	
     	//change his location
-        runningMan1.updateLoc();
+        player1.updateLoc();
+        player2.updateLoc();
         for(Bullet b : bulletList) {
         	b.updateLoc();
         }
         
         //change camera location
-        viewport.setX((runningMan1.x*8));
-        viewport.setY((runningMan1.y*8));
-        //System.out.println(runningMan1.y);
+        viewport.setX((myPlayer.x*8));
+        viewport.setY((myPlayer.y*8));
+        //System.out.println(player1.y);
         
         
         //thisClient.
@@ -159,23 +214,9 @@ public class BlasticFantastic extends BasicGame {
     	g.translate(512-viewport.getX(), 300-viewport.getY());
     	map1.render(0, 0);
     	g.setClip(0, 0, 1280, 720);
+    	g.drawAnimation(player1.getAnimation(player1.direction()), player1.x*8, player1.y*8);
+    	g.drawAnimation(player2.getAnimation(player2.direction()), player2.x*8, player2.y*8);
     	
-    	if(runningMan1.direction()==Player.IDLE_RIGHT) {
-    		//Player is idle, animate idle.
-    		g.drawAnimation(runningMan1.getAnimation(Player.IDLE_RIGHT), runningMan1.x*8, runningMan1.y*8);
-    	}
-    	else if(runningMan1.direction()==Player.IDLE_LEFT) {
-    		//Player is idle, animate idle.
-    		g.drawAnimation(runningMan1.getAnimation(Player.IDLE_LEFT), runningMan1.x*8, runningMan1.y*8);
-    	}
-    	else if(runningMan1.direction()==Player.RUNNING_LEFT) {
-    		//Player is running left, animate left.
-    		g.drawAnimation(runningMan1.getAnimation(Player.RUNNING_LEFT), runningMan1.x*8, runningMan1.y*8);
-    	}
-    	else if(runningMan1.direction()==Player.RUNNING_RIGHT) {
-    		//Player is running right, animate right.
-    		g.drawAnimation(runningMan1.getAnimation(Player.RUNNING_RIGHT), runningMan1.x*8, runningMan1.y*8);
-    	}
 	    for(Bullet b : bulletList) {
 	    	b.getImg().draw(b.x*8, b.y*8);
 	    }
@@ -186,12 +227,4 @@ public class BlasticFantastic extends BasicGame {
  
     }
     
-    
-    public static void main(String[] args) throws SlickException {
-         AppGameContainer app =
-			new AppGameContainer( new BlasticFantastic() );
-         app.setDisplayMode(1024, 600, false);
-         app.setVSync(true);
-         app.start();
-    }
 }

@@ -24,9 +24,14 @@ public class BFClient implements Runnable {
 			outStream = new ObjectOutputStream(thisSocket.getOutputStream());
 			inStream = new ObjectInputStream(thisSocket.getInputStream());
 			thisPlayer = p;
+			new Thread(this).start();
 		} catch (IOException e) {
 			System.err.println("Can't initiate input/output streams to socket");
 		}
+	}
+	
+	public Socket getSocket() {
+		return thisSocket;
 	}
 	
 	private ObjectOutputStream toServer() {
@@ -42,8 +47,9 @@ public class BFClient implements Runnable {
 		//Thread
 		while(true) {
 			try {
+				Thread.sleep(100);
 				outStream.flush();
-				outStream.writeObject(new BFPlayerPacket(thisPlayer.x, thisPlayer.y, thisPlayer.direction(), thisPlayer.getBody().getLinearVelocity().x, thisPlayer.getBody().getLinearVelocity().y));
+				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), thisPlayer.x, thisPlayer.y, thisPlayer.direction(), thisPlayer.getBody().getLinearVelocity().x, thisPlayer.getBody().getLinearVelocity().y));
 				Object o;
 				o = inStream.readObject();
 				if(o instanceof BFPlayerPacket) {
@@ -51,7 +57,7 @@ public class BFClient implements Runnable {
 					thisPlayer.x = bfp.xpos();
 					thisPlayer.y = bfp.ypos();
 				}
-			} catch (ClassNotFoundException | IOException e) {
+			} catch (ClassNotFoundException | IOException | InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());
 			}
 		}

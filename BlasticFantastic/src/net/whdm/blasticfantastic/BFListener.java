@@ -28,5 +28,6 @@ public class BFListener implements Runnable{
 				System.err.println("Can't accept client...");
 			}
 		}while(on);
+		System.out.println("Server is not listening for new connections");
 	}
 }

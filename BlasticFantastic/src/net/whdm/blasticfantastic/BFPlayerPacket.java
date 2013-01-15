@@ -8,14 +8,18 @@ public class BFPlayerPacket implements Serializable{
 	
 	private float xpos, ypos, vspeed, hspeed;
 	private int direction;
-	public BFPlayerPacket(float xpos, float ypos, int direction, float vspeed, float hspeed) {
+	private String who;
+	public BFPlayerPacket(String who, float xpos, float ypos, int direction, float vspeed, float hspeed) {
+		this.who = who;
 		this.direction = direction;
 		this.xpos = xpos;
 		this.ypos = ypos;
 		this.vspeed = vspeed;
 		this.hspeed = hspeed;
 	}
-	
+	public String who() {
+		return who;
+	}
 	public int direction() {
 		return direction;
 	}

@@ -11,7 +11,7 @@ public class BFServer {
 	public BFServer(boolean online) {
 		try {
 			System.out.println("Server starting");
-			thisServer = new ServerSocket(50001);
+			thisServer = new ServerSocket(7777);
 			new BFListener(online, thisServer);
 			System.out.println("Server online");
 			
