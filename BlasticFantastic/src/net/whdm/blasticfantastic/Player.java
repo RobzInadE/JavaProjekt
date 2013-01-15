@@ -10,7 +10,7 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-public class Player extends BodyDef{
+public class Player {
 	public float x;
 	public float y;
 	private int idleTiles;

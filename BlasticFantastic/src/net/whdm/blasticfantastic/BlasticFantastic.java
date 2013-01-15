@@ -1,4 +1,5 @@
 package net.whdm.blasticfantastic;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -32,6 +33,9 @@ public class BlasticFantastic extends BasicGame {
     public int velocityIterations, positionIterations;
     public static volatile ArrayList<Bullet> bulletList;
     public static Random random = new Random(System.currentTimeMillis());
+    private String status;
+    
+    private BFClient thisClient;
  
     public BlasticFantastic()
     {
@@ -86,6 +90,11 @@ public class BlasticFantastic extends BasicGame {
         //sDD.setFlags(0x0001); //Setting the debug draw flags,
         //world.setDebugDraw(sDD);
         
+        //Setup server
+        new BFServer(true);
+        thisClient = new BFClient(runningMan1, "localhost", 50001);
+        status = "Local server online";
+        
         
     }
  
@@ -103,7 +112,7 @@ public class BlasticFantastic extends BasicGame {
     		runningMan1.getBody().setLinearVelocity(new Vec2(-1.5f*delta, runningMan1.getBody().getLinearVelocity().y));
     	}
     	else  {
-    		System.out.println(runningMan1.direction());
+    		//System.out.println(runningMan1.direction());
     		if(runningMan1.direction()==Player.IDLE_RIGHT || runningMan1.direction()==Player.RUNNING_RIGHT) {
     			runningMan1.direction(Player.IDLE_RIGHT);
     			runningMan1.getAnimation(Player.IDLE_RIGHT).start();
@@ -138,6 +147,9 @@ public class BlasticFantastic extends BasicGame {
         //System.out.println(runningMan1.y);
         
         
+        //thisClient.
+        
+        
     }
  
     public void render(GameContainer gc, Graphics g) throws SlickException {
@@ -164,11 +176,12 @@ public class BlasticFantastic extends BasicGame {
     		//Player is running right, animate right.
     		g.drawAnimation(runningMan1.getAnimation(Player.RUNNING_RIGHT), runningMan1.x*8, runningMan1.y*8);
     	}
-    	//System.out.println(body.getPosition().y);
 	    for(Bullet b : bulletList) {
 	    	b.getImg().draw(b.x*8, b.y*8);
 	    }
     	//world.drawDebugData();
+	    
+	    g.drawString(status, viewport.getX()+300, viewport.getY()+250);
     	
  
     }
@@ -177,8 +190,8 @@ public class BlasticFantastic extends BasicGame {
     public static void main(String[] args) throws SlickException {
          AppGameContainer app =
 			new AppGameContainer( new BlasticFantastic() );
-         app.setVSync(true);
          app.setDisplayMode(1024, 600, false);
+         app.setVSync(true);
          app.start();
     }
 }
