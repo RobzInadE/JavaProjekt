@@ -51,13 +51,12 @@ public class BFClient implements Runnable {
 			try {
 				Thread.sleep(100);
 				outStream.flush();
-				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getX(), myPlayer.getY(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
+				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getPos(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
 				Object o;
 				o = inStream.readObject();
 				if(o instanceof BFPlayerPacket) {
 					BFPlayerPacket bfp = (BFPlayerPacket) o;
-					hisPlayer.setX(bfp.xpos());
-					hisPlayer.setY(bfp.ypos());
+					hisPlayer.setPos(bfp.getPos());
 					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
 					hisPlayer.direction(bfp.direction());
 				}

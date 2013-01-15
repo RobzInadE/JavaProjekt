@@ -119,13 +119,14 @@ public class Player {
 	public float getY() {
 		return y;
 	}
-	public void setX(float x) {
-		this.x = x;
-		this.bodyDef.position.set(x, getY());
+	
+	public Vec2 getPos() {
+		return new Vec2(x, y);
 	}
-	public void setY(float y) {
-		this.y = y;
-		this.bodyDef.position.set(getX(), y);
+	public void setPos(Vec2 v) {
+		this.x = v.x;
+		this.y = v.y;
+		this.bodyDef.position.set(v);
 	}
 	
 	
