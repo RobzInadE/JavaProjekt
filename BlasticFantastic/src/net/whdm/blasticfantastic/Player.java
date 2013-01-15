@@ -1,5 +1,7 @@
 package net.whdm.blasticfantastic;
 
+import java.io.Serializable;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -10,7 +12,7 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-public class Player {
+public class Player implements Serializable {
 	private volatile float x;
 	private volatile float y;
 	private int idleTiles;
@@ -110,8 +112,8 @@ public class Player {
 		return this.body;
 	}
 	public void updateLoc() {
-		this.x = this.body.getPosition().x;
-		this.y = this.body.getPosition().y;
+		x = this.body.getPosition().x;
+		y = this.body.getPosition().y;
 	}
 	public float getX() {
 		return x;
@@ -126,7 +128,7 @@ public class Player {
 	public void setPos(Vec2 v) {
 		this.x = v.x;
 		this.y = v.y;
-		this.bodyDef.position.set(v);
+		this.body.setTransform(v, this.body.getAngle());
 	}
 	
 	
