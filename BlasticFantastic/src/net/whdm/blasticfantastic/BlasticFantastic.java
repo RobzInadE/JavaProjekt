@@ -155,16 +155,17 @@ public class BlasticFantastic extends BasicGame {
  
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
+    	float delta2 = 300.0f/delta;
     	if (gc.getInput().isKeyDown(Input.KEY_RIGHT)) {
     		myPlayer.direction(Player.RUNNING_RIGHT);
     		myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
-    		myPlayer.getBody().setLinearVelocity(new Vec2(1.5f*delta, myPlayer.getBody().getLinearVelocity().y));
+    		myPlayer.getBody().setLinearVelocity(new Vec2(1.5f*delta2, myPlayer.getBody().getLinearVelocity().y));
     		
     	}
     	else if (gc.getInput().isKeyDown(Input.KEY_LEFT)) {
     		myPlayer.direction(Player.RUNNING_LEFT);
     		myPlayer.getAnimation(Player.RUNNING_LEFT).start();
-    		myPlayer.getBody().setLinearVelocity(new Vec2(-1.5f*delta, myPlayer.getBody().getLinearVelocity().y));
+    		myPlayer.getBody().setLinearVelocity(new Vec2(-1.5f*delta2, myPlayer.getBody().getLinearVelocity().y));
     	}
     	else  {
     		if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
@@ -177,7 +178,8 @@ public class BlasticFantastic extends BasicGame {
     		}
     	}
     	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
-    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -3*delta));
+    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -3*delta2));
+    		System.out.println("Delta: "+delta2+" - YVelocity: "+myPlayer.getBody().getLinearVelocity().y);
     	}
     	
     	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {

@@ -10,7 +10,6 @@ public class StartBlasticFantastic {
 		
 		int a = in.nextInt();
 		in.nextLine();
-		
 		switch(a) {
 		case 1: {
 			new BlasticFantastic();

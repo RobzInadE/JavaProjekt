@@ -60,8 +60,13 @@ public class BFClient implements Runnable {
 					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
 					hisPlayer.direction(bfp.direction());
 				}
-			} catch (ClassNotFoundException | IOException | InterruptedException e) {
+			} catch (ClassNotFoundException e) {
 				System.err.println("Couldn't read "+e.getMessage());
+			} catch (InterruptedException e) {
+				System.err.println("Couldn't read "+e.getMessage());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
