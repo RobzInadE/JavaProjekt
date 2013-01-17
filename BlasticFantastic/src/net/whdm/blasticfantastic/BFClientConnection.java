@@ -35,7 +35,10 @@ public class BFClientConnection implements Runnable{
 					}
 				}
 				//System.out.println("Heartbeat");
-			} catch (IOException | ClassNotFoundException e) {
+			} catch (IOException e) {
+				System.err.println("Whoops");
+			}
+			catch(ClassNotFoundException e) {
 				System.err.println("Whoops");
 			}
 		}

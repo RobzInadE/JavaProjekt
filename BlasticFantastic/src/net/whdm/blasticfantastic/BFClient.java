@@ -49,7 +49,7 @@ public class BFClient implements Runnable {
 		//Thread
 		while(true) {
 			try {
-				Thread.sleep(10);
+				Thread.sleep(30);
 				outStream.flush();
 				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getPos(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
 				Object o;
@@ -60,8 +60,13 @@ public class BFClient implements Runnable {
 					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
 					hisPlayer.direction(bfp.direction());
 				}
-			} catch (ClassNotFoundException | IOException | InterruptedException e) {
+			} catch (ClassNotFoundException e) {
 				System.err.println("Couldn't read "+e.getMessage());
+			} catch (InterruptedException e) {
+				System.err.println("Couldn't read "+e.getMessage());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
