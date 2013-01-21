@@ -13,28 +13,32 @@ import org.newdawn.slick.SlickException;
 
 public class Bullet {
 	private Image bulletImg;
-	public float x,y,rx;
+	public float x,y,rx = 0;
 	private Body body;
-	private int d;
+	private int d, mx, my;
 	public Vector<Long> tempInfo;
+	private float xSpeed, ySpeed;
 	
-	public Bullet(float x, float y, int direction) throws SlickException {
-		switch(direction) {
-		case 1: case -1: //Left
-			this.rx = -1f;
-			this.d = -750;
-			break;
-		default:
-			this.rx = 5f;
-			this.d = 750;
-			break;		
-		}
+	public Bullet(float x, float y, int mouseX, int mouseY) throws SlickException {
 		this.x = x;
 		this.y = y;
+		this.mx = mouseX;
+		this.my = mouseY;
+		
+		float startingSpeed = 750;
+		double radian = Math.atan2(my-320, mx-512);
+
+		rx = -1f;
+		if(mx>512) rx = 5f;
+		
+		xSpeed = (float) (startingSpeed * Math.cos(radian));
+		ySpeed = (float) (startingSpeed * Math.sin(radian));
+		
 		this.bulletImg = new Image("data/bullet.png");
 		// Dynamic Body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
+        //Set init pos to x+(horizontal offset), y = y+vertical offset to not interfer with the characters physic body.
         bodyDef.position.set(this.x+rx, this.y+1.75f);
         bodyDef.bullet = true;
         this.body = BlasticFantastic.world.createBody(bodyDef);
@@ -46,8 +50,8 @@ public class Bullet {
         this.body.createFixture(fixtureDef);
         this.body.setUserData(tempInfo);
         this.body.setFixedRotation(true);
-        this.body.setGravityScale(0);
-        this.body.setLinearVelocity(new Vec2(this.d, 0));
+        this.body.setGravityScale(0.05f);
+        this.body.setLinearVelocity(new Vec2(xSpeed, ySpeed));
         
 	}
 	

@@ -185,16 +185,22 @@ public class BlasticFantastic extends BasicGame {
     		//System.out.println("Delta: "+delta2+" - YVelocity: "+myPlayer.getBody().getLinearVelocity().y);
     	}
     	
-    	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
-    		//Fire new bullet!
-    		bulletList.add(new Bullet(myPlayer.getX(), myPlayer.getY(), myPlayer.direction()));
+    	if(gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+    		//Fire new bullet (if we're facing the right way)!
+    		if((
+    		//IF we're facing left, and mouseclick was on left side of the screen
+    		(myPlayer.direction()==1 || myPlayer.direction()==-1) && gc.getInput().getAbsoluteMouseX()<(gc.getWidth()/2)) ||
+    		//OR if we're facing right, and mouseclick was on right side of the screen
+    		(myPlayer.direction()==2 || myPlayer.direction()==-2) && gc.getInput().getAbsoluteMouseX()>(gc.getWidth()/2))
+    		//Then add a new bullet with mouseX and mouseY coords.
+    		bulletList.add(new Bullet(myPlayer.getX(), myPlayer.getY(), gc.getInput().getAbsoluteMouseX(), gc.getInput().getAbsoluteMouseY()));
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
     	//bulletWorld.step(timeStep, velocityIterations, positionIterations);
     	//System.out.println(body.getLinearVelocity().y);
     	
-    	//change his location
+    	//change his/my location and/or bullets.
         player1.updateLoc();
         player2.updateLoc();
         for(Bullet b : bulletList) {
@@ -204,7 +210,6 @@ public class BlasticFantastic extends BasicGame {
         //change camera location
         viewport.setX((myPlayer.getX()*8));
         viewport.setY((myPlayer.getY()*8));
-        //System.out.println(player1.y);
         
         
     }
