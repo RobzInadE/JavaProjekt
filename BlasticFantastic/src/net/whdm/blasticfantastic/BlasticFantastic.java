@@ -6,6 +6,7 @@ import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.BodyDef;
+import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
@@ -87,8 +88,6 @@ public class BlasticFantastic extends BasicGame {
         //Setup server
         
         
-        
-        
         //Player 1
         player1 = new Player(5, 180, 4, 12, 40, 40, "data/temp.png", 50);
         player1.getAnimation(Player.IDLE_LEFT).start();
@@ -110,6 +109,10 @@ public class BlasticFantastic extends BasicGame {
         	thisClient = new BFClient(myPlayer, hisPlayer, host, port);
         	status = "Local server online";
         }
+        
+        FixtureDef fd = hisPlayer.getFixture();
+        fd.friction = 0;
+        hisPlayer.getBody().createFixture(fd);
         
         //Get collision layer from map
         int collisionLayerIndex = map1.getLayerIndex("collision");
@@ -155,17 +158,17 @@ public class BlasticFantastic extends BasicGame {
  
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
-    	float delta2 = 300.0f/delta;
-    	if (gc.getInput().isKeyDown(Input.KEY_RIGHT)) {
+
+    	if (gc.getInput().isKeyDown(Input.KEY_D)) {
     		myPlayer.direction(Player.RUNNING_RIGHT);
     		myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
-    		myPlayer.getBody().setLinearVelocity(new Vec2(1.5f*delta2, myPlayer.getBody().getLinearVelocity().y));
+    		myPlayer.getBody().setLinearVelocity(new Vec2(25.5f, myPlayer.getBody().getLinearVelocity().y));
     		
     	}
-    	else if (gc.getInput().isKeyDown(Input.KEY_LEFT)) {
+    	else if (gc.getInput().isKeyDown(Input.KEY_A)) {
     		myPlayer.direction(Player.RUNNING_LEFT);
     		myPlayer.getAnimation(Player.RUNNING_LEFT).start();
-    		myPlayer.getBody().setLinearVelocity(new Vec2(-1.5f*delta2, myPlayer.getBody().getLinearVelocity().y));
+    		myPlayer.getBody().setLinearVelocity(new Vec2(-25.5f, myPlayer.getBody().getLinearVelocity().y));
     	}
     	else  {
     		if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
@@ -178,8 +181,8 @@ public class BlasticFantastic extends BasicGame {
     		}
     	}
     	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
-    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -3*delta2));
-    		System.out.println("Delta: "+delta2+" - YVelocity: "+myPlayer.getBody().getLinearVelocity().y);
+    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -60));
+    		//System.out.println("Delta: "+delta2+" - YVelocity: "+myPlayer.getBody().getLinearVelocity().y);
     	}
     	
     	if(gc.getInput().isKeyPressed(Input.KEY_RETURN)) {
@@ -202,9 +205,6 @@ public class BlasticFantastic extends BasicGame {
         viewport.setX((myPlayer.getX()*8));
         viewport.setY((myPlayer.getY()*8));
         //System.out.println(player1.y);
-        
-        
-        //thisClient.
         
         
     }

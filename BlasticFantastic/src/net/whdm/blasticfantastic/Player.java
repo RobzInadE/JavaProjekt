@@ -27,6 +27,7 @@ public class Player implements Serializable {
 	private int lastDirection = IDLE_LEFT;
 	private volatile Body body;
 	private volatile BodyDef bodyDef;
+	private volatile FixtureDef fixtureDef;
 	
 	Player(float x, float y, int idleTiles, int runningTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;
@@ -72,7 +73,7 @@ public class Player implements Serializable {
         this.body = BlasticFantastic.world.createBody(bodyDef);
         PolygonShape dynamicBox = new PolygonShape();
         dynamicBox.setAsBox(this.tileWidth/16, this.tileHeight/16, new Vec2(this.tileWidth/16, this.tileHeight/16), 0);
-        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef = new FixtureDef();
         fixtureDef.shape = dynamicBox;
         fixtureDef.density=1;
         fixtureDef.friction=5;
@@ -110,6 +111,10 @@ public class Player implements Serializable {
 	
 	public Body getBody() {
 		return this.body;
+	}
+	
+	public FixtureDef getFixture() {
+		return fixtureDef;
 	}
 	public void updateLoc() {
 		x = this.body.getPosition().x;
