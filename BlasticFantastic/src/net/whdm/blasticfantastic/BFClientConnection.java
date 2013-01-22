@@ -5,6 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+/*
+ * This class will handle the connections on the server.
+ * It will read objects from our client and send them through to the others players.
+ */
+
 public class BFClientConnection implements Runnable{
 	
 	private Socket thisConnection;
@@ -28,9 +33,13 @@ public class BFClientConnection implements Runnable{
 	public void run() {
 		while(true) {
 			try {
+				//Read incoming object, write it to all other users (we exclude our selfs)
 				Object o = this.serverIn.readObject();
 				for(BFClientConnection bfc : thisBfl.getClients()) {
-					if(who!=bfc.who)bfc.serverOut.writeObject(o);
+					if(who!=bfc.who) {
+						bfc.serverOut.flush();
+						bfc.serverOut.writeObject(o);
+					}
 				}
 				
 			} catch (IOException e) {

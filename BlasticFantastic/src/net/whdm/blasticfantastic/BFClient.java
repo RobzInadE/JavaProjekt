@@ -31,6 +31,7 @@ public class BFClient implements Runnable {
 			inStream = new ObjectInputStream(thisSocket.getInputStream());
 			myPlayer = p1;
 			hisPlayer = p2;
+			//Start new receiver that will listen on incoming objects.
 			new BFClientReceiver(inStream, hisPlayer);
 			new Thread(this).start();
 		} catch (IOException e) {
@@ -44,7 +45,7 @@ public class BFClient implements Runnable {
 
 	@Override
 	public void run() {
-		//Thread
+		//Thread, sleep 50ms and send new updated information about our position and x&y speeds.
 		while(true) {
 			try {
 				Thread.sleep(50);

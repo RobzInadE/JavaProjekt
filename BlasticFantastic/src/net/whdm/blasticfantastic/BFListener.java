@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+/*
+ * This class listens for new client connection requests. Adds them to an arraylist.
+ */
+
 public class BFListener implements Runnable{
 
 	boolean on;

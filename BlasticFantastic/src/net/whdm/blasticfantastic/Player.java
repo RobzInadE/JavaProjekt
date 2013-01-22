@@ -10,7 +10,12 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
+/*
+ * Main class for each player on the screen.
+ */
+
 public class Player {
+	//Lots of variables.
 	private volatile float x;
 	private volatile float y;
 	private int tileWidth, tileHeight, runningTiles, idleTiles, gunTiles;
@@ -25,6 +30,7 @@ public class Player {
 	private volatile FixtureDef fixtureDef;
 	public volatile boolean isJumping, isFiring = false;
 	
+	//Constructor. We specify how many of the tiles are running, gunning, or just idling.
 	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;
 		this.y = y;
@@ -37,6 +43,7 @@ public class Player {
 		this.delay = delay;
 		this.sprites = new SpriteSheet(this.spritesheet,this.tileWidth,this.tileHeight);
 		
+		//Create new animations.
 		this.player_idle_left = new Animation();
 		this.player_idle_right = new Animation();
 		this.player_running_right = new Animation();
@@ -44,7 +51,7 @@ public class Player {
 		this.player_shooting_right = new Animation();
 		this.player_shooting_left = new Animation();
 		
-		//Create idle animation
+		//Create (fill) idle animation
 		for (int frame=0;frame<this.idleTiles;frame++) {
 			player_idle_right.addFrame(sprites.getSprite(frame,0), this.delay);
 		}
@@ -55,12 +62,12 @@ public class Player {
 		player_idle_left.setPingPong(true);
 		player_idle_right.setPingPong(true);
 		
-		//Create running right
+		//Create (fill) running right
 		for (int frame=0;frame<this.runningTiles;frame++) {
 			player_running_right.addFrame(sprites.getSprite(frame,1), this.delay);
 		}
 		
-		//Create running left (Mirrored.)
+		//Create (fill) running left (Mirrored.)
 		for (int frame=this.runningTiles-1;frame>0;frame--) {
 			player_running_left.addFrame(sprites.getSprite(frame,2), this.delay);
 		}
@@ -70,12 +77,12 @@ public class Player {
 		 * så jag utelämnar det. Här byggs animationerna upp iaf.
 		 */
 		
-		//Create gun animation right
+		//Create (fill) gun animation right
 		for(int frame=0;frame<this.gunTiles;frame++) {
 			player_shooting_right.addFrame(sprites.getSprite(frame,3), 30);
 		}
 		
-		//Create gun animation left (Mirrored.)
+		//Create (fill) gun animation left (Mirrored.)
 		for(int frame=this.gunTiles-1;frame>0;frame--) {
 			player_shooting_left.addFrame(sprites.getSprite(frame,4), 30);
 		}

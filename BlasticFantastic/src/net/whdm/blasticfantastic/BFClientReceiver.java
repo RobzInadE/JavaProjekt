@@ -5,6 +5,11 @@ import java.io.ObjectInputStream;
 
 import org.jbox2d.common.Vec2;
 
+/*
+ * This class grabes the inputstream of our serverside socket made from our connected client, and listens to objects.
+ * If it got a new object that we like, we update either positions or create new bullets.
+ */
+
 public class BFClientReceiver implements Runnable{
 
 	private ObjectInputStream in;
@@ -20,6 +25,7 @@ public class BFClientReceiver implements Runnable{
 		while(true) {
 			Object o;
 			try {
+				//Read if possible, and update.
 				o = in.readObject();
 				if(o instanceof BFPlayerPacket) {
 					BFPlayerPacket bfp = (BFPlayerPacket) o;

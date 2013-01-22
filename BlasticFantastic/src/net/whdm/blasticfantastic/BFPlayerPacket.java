@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import org.jbox2d.common.Vec2;
 
+/*
+ * Serializable packet that holds our players position, and speed in x&y. Very simple class.
+ */
+
 public class BFPlayerPacket implements Serializable{
 
 	private static final long serialVersionUID = -569804796318003059L;

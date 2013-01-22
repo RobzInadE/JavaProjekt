@@ -2,6 +2,11 @@ package net.whdm.blasticfantastic;
 
 import java.io.Serializable;
 
+
+/*
+ * Simple Serializable class for sending 4 variables through objectoutputstreams. Stores xpos ypos and speed in xled and yled.
+ */
+
 public class BFBulletPacket implements Serializable {
 
 	private static final long serialVersionUID = -8207340276464401201L;

@@ -3,6 +3,10 @@ package net.whdm.blasticfantastic;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+/*
+ * Simple class that creates a new ServerSocket and a new Listener for connections.
+ */
+
 public class BFServer {
 
 	private ServerSocket thisServer;

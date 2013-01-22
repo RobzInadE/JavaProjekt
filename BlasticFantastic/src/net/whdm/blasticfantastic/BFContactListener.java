@@ -29,7 +29,7 @@ public class BFContactListener implements ContactListener {
 		BlasticFantastic.bulletList.remove(toRemove);
 	}
 	
-	//I won't be using these 3 methods.
+	//We won't be using these 3 methods.
 
 	@Override
 	public void endContact(Contact c) {
