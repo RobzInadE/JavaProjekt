@@ -1,7 +1,5 @@
 package net.whdm.blasticfantastic;
 
-import java.io.Serializable;
-
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -26,6 +24,7 @@ public class Player {
 	private volatile BodyDef bodyDef;
 	private volatile FixtureDef fixtureDef;
 	public volatile boolean isJumping, isFiring = false;
+	public 
 	
 	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;
@@ -67,6 +66,11 @@ public class Player {
 			player_running_left.addFrame(sprites.getSprite(frame,2), this.delay);
 		}
 		
+		/*
+		 * Jag kan inte få animationen för att skjuta, att spelas en gång och sen gå tillbaka till föregående animation på ett bra sätt
+		 * så jag utelämnar det. Här byggs animationerna upp iaf.
+		 */
+		
 		//Create gun animation right
 		for(int frame=0;frame<this.gunTiles;frame++) {
 			player_shooting_right.addFrame(sprites.getSprite(frame,3), 30);
@@ -77,10 +81,11 @@ public class Player {
 			player_shooting_left.addFrame(sprites.getSprite(frame,4), 30);
 		}
 		
+		//Will only play once.
 		player_shooting_left.setLooping(false);
 		player_shooting_right.setLooping(false);
 		
-		// Dynamic Body
+		// Dynamic Body (Phys world)
         bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
         bodyDef.position.set(this.x, this.y);
@@ -122,7 +127,7 @@ public class Player {
 			return new Animation();
 		}
 	}
-	
+	//Booleans
 	public boolean isFiring() {
 		return this.isFiring;
 	}

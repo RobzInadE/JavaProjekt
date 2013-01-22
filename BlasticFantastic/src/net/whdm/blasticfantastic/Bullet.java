@@ -12,15 +12,25 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+/*
+ * This is the class for each Bullet. You either create a completely new bullet, or create one from the
+ * input given.
+ * NOTE: This can't be created in a seperate thread from the update/render thread, since DX needs to be bound to ONE thread.
+ */
+
 public class Bullet {
 	private Image bulletImg;
 	public float x,y,rx = 0;
 	private Body body;
-	private int d, mx, my;
+	private int mx, my;
 	public Vector<Long> tempInfo;
 	public float xSpeed, ySpeed;
+	public boolean isMine;
 	
+	//Primary constructor, creates bullet based on mouse points and location. Calculates what xSpeed and ySpeed it should have based on
+	//Mouse position when clicked.
 	public Bullet(float x, float y, int mouseX, int mouseY) throws SlickException {
+		this.isMine = true;
 		this.x = x;
 		this.y = y;
 		this.mx = mouseX;
@@ -43,7 +53,9 @@ public class Bullet {
         
 	}
 	
+	//Secondary constructor, for creating bullet from received network packet. This also sets isMine to false, meaning we can collide with it.
 	public Bullet(float x, float y, float xs, float ys) throws SlickException {
+		this.isMine = false;
 		this.x = x;
 		this.y = y;
 		this.xSpeed = xs;
@@ -53,6 +65,7 @@ public class Bullet {
 		
 	}
 	
+	//Create the physics-world object attatched to graphics object.
 	public void createPhys() {
 		// Dynamic Body
         BodyDef bodyDef = new BodyDef();
@@ -76,6 +89,8 @@ public class Bullet {
 	public Image getImg() {
 		return this.bulletImg;
 	}
+	
+	//Run this (runs each update()) to synchronize physics object with visible object.
 	public void updateLoc() {
 		this.x = this.body.getPosition().x;
 		this.y = this.body.getPosition().y;

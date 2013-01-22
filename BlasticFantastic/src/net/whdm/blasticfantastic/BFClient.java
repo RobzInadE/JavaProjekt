@@ -6,14 +6,20 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import org.jbox2d.common.Vec2;
-import org.newdawn.slick.SlickException;
 
+
+/*
+ * Class for handling the client-side connection and socket when playing multiplayer and so forth.
+ * This class sends updates each 50ms to all connected clients.
+ */
 public class BFClient implements Runnable {
 
 	public ObjectOutputStream outStream;
 	public ObjectInputStream inStream;
 	private Socket thisSocket;
 	private volatile Player hisPlayer, myPlayer;
+	
+	//Construct, also specify the 2 players.
 	public BFClient(Player p1, Player p2, String server, int port) {
 		try {
 			System.out.println("Connecting to "+server+" port "+port);
@@ -64,6 +70,7 @@ public class BFClient implements Runnable {
 			} catch (InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());
 			} catch (IOException e) {
+				
 				System.err.println("Can't send/write to socket!");
 			}
 		}

@@ -17,8 +17,8 @@ public class BFClientConnection implements Runnable{
 		thisBfl = bfl;
 		this.who = s.getRemoteSocketAddress().toString();
 		try {
-			serverOut = new ObjectOutputStream(s.getOutputStream());
-			serverIn = new ObjectInputStream(s.getInputStream());
+			serverOut = new ObjectOutputStream(thisConnection.getOutputStream());
+			serverIn = new ObjectInputStream(thisConnection.getInputStream());
 		} catch (IOException e) {
 			System.err.println("ServerConnection can't establish input/output stream");
 		}

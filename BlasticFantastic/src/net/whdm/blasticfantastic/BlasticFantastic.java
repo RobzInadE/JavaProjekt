@@ -30,7 +30,7 @@ public class BlasticFantastic extends BasicGame {
     int y = 100;
     int scale = 1;
     public int displayList;
-    public static World world;
+    public volatile static World world;
     public float timeStep;
     public int velocityIterations, positionIterations;
     public static volatile ArrayList<Bullet> bulletList;
@@ -42,6 +42,8 @@ public class BlasticFantastic extends BasicGame {
     public volatile static boolean upcomingBullet;
     public volatile static Vec2 upcbcoords = null;
     public volatile static Vec2 upcbspeed = null;
+    
+    private volatile static ArrayList<Body> bulletsToRemove;
     
     private BFClient thisClient;
     
@@ -82,6 +84,7 @@ public class BlasticFantastic extends BasicGame {
     @Override
     public void init(GameContainer gc) throws SlickException {
 
+    	bulletsToRemove = new ArrayList<Body>();
         viewport = new Rectangle(0, 0, 1024, 600);        
         map1 = new TiledMap("data/2.tmx");
         
@@ -137,7 +140,6 @@ public class BlasticFantastic extends BasicGame {
         	}
         }
         
-        //System.out.println(tiles);
 
         // Setup world
         timeStep = 1.0f/60.0f;
@@ -211,13 +213,23 @@ public class BlasticFantastic extends BasicGame {
     		}
     	}
     	
+    	//Add new bullet received from network.
     	if(upcbcoords!=null) {
     		bulletList.add(new Bullet(upcbcoords.x, upcbcoords.y, upcbspeed.x, upcbspeed.y));
     		upcbcoords = null;
     		upcbspeed = null;
     	}
     	
+    	//Step phys world each update
     	world.step(timeStep, velocityIterations, positionIterations);
+    	
+    	if(bulletsToRemove.size()>0) {
+    		System.out.println("New bullet to remove");
+    		for(Body b : bulletsToRemove) {
+    			world.destroyBody(b);
+    		}
+    		bulletsToRemove.clear();
+    	}
     	
     	//change his/my location and/or bullets.
         player1.updateLoc();
@@ -232,6 +244,10 @@ public class BlasticFantastic extends BasicGame {
         
         //System.out.println(myPlayer.isFiring());
         
+    }
+    
+    public static void removeBody(Body s) {
+    	bulletsToRemove.add(s);
     }
  
     public void render(GameContainer gc, Graphics g) throws SlickException {
