@@ -28,16 +28,17 @@ public class BFClientConnection implements Runnable{
 	public void run() {
 		while(true) {
 			try {
-				Object o = serverIn.readObject();
+				this.serverIn.reset();
+				Object o = this.serverIn.readObject();
 				for(BFClientConnection bfc : thisBfl.getClients()) {
 					if(who!=bfc.who)bfc.serverOut.writeObject(o);
 				}
 				
 			} catch (IOException e) {
-				System.err.println(e.getMessage());
+				System.err.println(e.getMessage()+" 11111");
 			}
 			catch(ClassNotFoundException e) {
-				System.err.println(e.getMessage());
+				System.err.println(e.getMessage()+" 22222");
 			}
 		}
 	}

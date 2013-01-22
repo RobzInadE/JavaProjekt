@@ -5,8 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import org.jbox2d.common.Vec2;
-
 
 /*
  * Class for handling the client-side connection and socket when playing multiplayer and so forth.
