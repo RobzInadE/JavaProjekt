@@ -28,7 +28,6 @@ public class BFClientConnection implements Runnable{
 	public void run() {
 		while(true) {
 			try {
-				this.serverIn.reset();
 				Object o = this.serverIn.readObject();
 				for(BFClientConnection bfc : thisBfl.getClients()) {
 					if(who!=bfc.who)bfc.serverOut.writeObject(o);
