@@ -55,7 +55,9 @@ public class BFClient implements Runnable {
 				}
 				else if(o instanceof BFBulletPacket) {
 					BFBulletPacket bp = (BFBulletPacket) o;
-					BlasticFantastic.createBullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
+					BlasticFantastic.upcomingBullet = true;
+					BlasticFantastic.upcbcoords = new Vec2(bp.getX(), bp.getY());
+					BlasticFantastic.upcbspeed = new Vec2(bp.getXSpeed(), bp.getYSpeed());
 				}
 			} catch (ClassNotFoundException e) {
 				System.err.println("Couldn't read "+e.getMessage());

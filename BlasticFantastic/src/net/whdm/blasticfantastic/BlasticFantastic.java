@@ -39,8 +39,13 @@ public class BlasticFantastic extends BasicGame {
     private String host = "localhost";
     private int port = 50001;
     private boolean multiplayer = false;
+    public volatile static boolean upcomingBullet;
+    public volatile static Vec2 upcbcoords = null;
+    public volatile static Vec2 upcbspeed = null;
     
     private BFClient thisClient;
+    
+    public volatile static Bullet tb=null;
     
     public BlasticFantastic()
     {
@@ -112,7 +117,7 @@ public class BlasticFantastic extends BasicGame {
         }
         
         FixtureDef fd = hisPlayer.getFixture();
-        fd.friction = 0;
+        fd.friction = 2;
         hisPlayer.getBody().createFixture(fd);
         
         //Get collision layer from map
@@ -151,14 +156,6 @@ public class BlasticFantastic extends BasicGame {
         
         
         
-    }
-    
-    public static void createBullet(float x, float y, float xspeed, float yspeed) {
-    	try {
-			bulletList.add(new Bullet(x, y, xspeed, yspeed));
-		} catch (SlickException e) {
-			System.err.println(e.getMessage());
-		}
     }
     
     public Player getMyPlayer() {
@@ -212,6 +209,12 @@ public class BlasticFantastic extends BasicGame {
 					System.err.println("Error sending bullet");
 				}
     		}
+    	}
+    	
+    	if(upcbcoords!=null) {
+    		bulletList.add(new Bullet(upcbcoords.x, upcbcoords.y, upcbspeed.x, upcbspeed.y));
+    		upcbcoords = null;
+    		upcbspeed = null;
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
