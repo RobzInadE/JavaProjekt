@@ -49,7 +49,7 @@ public class BFClient implements Runnable {
 		//Thread
 		while(true) {
 			try {
-				Thread.sleep(50);
+				Thread.sleep(100);
 				outStream.flush();
 				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getPos(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
 				Object o;
