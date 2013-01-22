@@ -15,22 +15,34 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
+/*
+ * Simple launcher-class for my game. Gives you the option to start a local server (Singleplayer)
+ * or a multiplayer game where you connect to someone elses's singleplayer game.
+ * Launcher is made in a JFrame and an action command starts a new instance of my game, with either no arguments or HOST IP & PORT as arguments.
+ * 
+ * Robin Jonsson
+ */
 
 public class StartBlasticFantastic {
 	
 	public static void main(String[] args) {
 		
+		//New JFrame
 		JFrame window = new JFrame("BlasticFantastic v 0.1 Launcher");
 		final JDialog connection = new JDialog();
 		window.setSize(500, 400);
 		window.setResizable(false);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		//Container
 		Container container = window.getContentPane();
 		container.setLayout(new GridLayout(2,1));
 		container.setBackground(Color.WHITE);
+		
+		//Put out nice image in a JLabel as a good holder.
 		JLabel logo = new JLabel(new ImageIcon("data/bflogo.png"));
 		
+		//Create the buttons
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridBagLayout());
 		buttonPanel.setBackground(Color.WHITE);
@@ -46,15 +58,17 @@ public class StartBlasticFantastic {
 		container.add(logo);
 		container.add(buttonPanel);
 		
-		
+		//Singleplayer-button
 		sp_button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				new BlasticFantastic();
 			}
 		});
 		
+		//Multiplayer-button
 		mp_button.addActionListener(new ActionListener()  {
 			public void actionPerformed(ActionEvent arg0) {
+				//Show a JDialog
 				connection.setSize(270, 120);
 				connection.setResizable(false);
 				connection.setLayout(new GridBagLayout());
@@ -75,6 +89,7 @@ public class StartBlasticFantastic {
 				connection.add(tryconnect);
 				
 				tryconnect.addActionListener(new ActionListener() {
+					//Connect-button pressed, try and connect to give ip and port.
 					public void actionPerformed(ActionEvent e) {
 						new BlasticFantastic(serverip.getText(), Integer.parseInt(serverport.getText()));
 					}
@@ -85,7 +100,7 @@ public class StartBlasticFantastic {
 			}
 		});
 		
-		
+		//We need to see something
 		window.setVisible(true);
 	}
 

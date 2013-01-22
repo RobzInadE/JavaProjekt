@@ -8,8 +8,8 @@ import java.net.Socket;
 public class BFClientConnection implements Runnable{
 	
 	private Socket thisConnection;
-	private ObjectOutputStream serverOut;
-	private ObjectInputStream serverIn;
+	private volatile ObjectOutputStream serverOut;
+	private volatile ObjectInputStream serverIn;
 	private BFListener thisBfl;
 	private String who;
 	public BFClientConnection(Socket s, BFListener bfl) {
@@ -29,17 +29,15 @@ public class BFClientConnection implements Runnable{
 		while(true) {
 			try {
 				Object o = serverIn.readObject();
-				if(o instanceof BFPlayerPacket) {
-					for(BFClientConnection bfc : thisBfl.getClients()) {
-						if(who!=bfc.who)bfc.serverOut.writeObject(o);
-					}
+				for(BFClientConnection bfc : thisBfl.getClients()) {
+					if(who!=bfc.who)bfc.serverOut.writeObject(o);
 				}
-				//System.out.println("Heartbeat");
+				
 			} catch (IOException e) {
-				System.err.println("Whoops");
+				System.err.println(e.getMessage());
 			}
 			catch(ClassNotFoundException e) {
-				System.err.println("Whoops");
+				System.err.println(e.getMessage());
 			}
 		}
 	}

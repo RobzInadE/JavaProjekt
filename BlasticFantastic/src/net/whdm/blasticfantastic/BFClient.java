@@ -9,8 +9,8 @@ import org.jbox2d.common.Vec2;
 
 public class BFClient implements Runnable {
 
-	private ObjectOutputStream outStream;
-	private ObjectInputStream inStream;
+	public ObjectOutputStream outStream;
+	public ObjectInputStream inStream;
 	private Socket thisSocket;
 	private volatile Player hisPlayer, myPlayer;
 	public BFClient(Player p1, Player p2, String server, int port) {
@@ -35,21 +35,13 @@ public class BFClient implements Runnable {
 	public Socket getSocket() {
 		return thisSocket;
 	}
-	
-	private ObjectOutputStream toServer() {
-		return outStream;
-	}
-	
-	private ObjectInputStream fromServer() {
-		return inStream;
-	}
 
 	@Override
 	public void run() {
 		//Thread
 		while(true) {
 			try {
-				Thread.sleep(30);
+				Thread.sleep(50);
 				outStream.flush();
 				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getPos(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
 				Object o;
@@ -60,13 +52,17 @@ public class BFClient implements Runnable {
 					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
 					hisPlayer.direction(bfp.direction());
 				}
+				else if(o instanceof BFBulletPacket) {
+					BFBulletPacket bp = (BFBulletPacket) o;
+					Bullet b = new Bullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
+					BlasticFantastic.bulletList.add(b);
+				}
 			} catch (ClassNotFoundException e) {
 				System.err.println("Couldn't read "+e.getMessage());
 			} catch (InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.err.println("Can't send/write to socket!");
 			}
 		}
 	}

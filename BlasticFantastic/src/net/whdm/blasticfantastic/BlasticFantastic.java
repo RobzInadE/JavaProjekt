@@ -1,4 +1,5 @@
 package net.whdm.blasticfantastic;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -89,10 +90,10 @@ public class BlasticFantastic extends BasicGame {
         
         
         //Player 1
-        player1 = new Player(5, 180, 4, 12, 40, 40, "data/temp.png", 50);
+        player1 = new Player(5, 180, 4, 12, 11, 40, 40, "data/temp2.png", 50);
         player1.getAnimation(Player.IDLE_LEFT).start();
         
-        player2 = new Player(15, 180, 4, 12, 40, 40, "data/temp.png", 50);
+        player2 = new Player(15, 180, 4, 12, 11, 40, 40, "data/temp2.png", 50);
         player2.getAnimation(Player.IDLE_LEFT).start();
         if(multiplayer) {
         	//Connecting to someone
@@ -160,45 +161,52 @@ public class BlasticFantastic extends BasicGame {
     public void update(GameContainer gc, int delta) throws SlickException {
 
     	if (gc.getInput().isKeyDown(Input.KEY_D)) {
+    		//Run right, set direction, get proper animation (start it aswell), and set a velocity
     		myPlayer.direction(Player.RUNNING_RIGHT);
     		myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
     		myPlayer.getBody().setLinearVelocity(new Vec2(25.5f, myPlayer.getBody().getLinearVelocity().y));
     		
     	}
     	else if (gc.getInput().isKeyDown(Input.KEY_A)) {
+    		//Run left, set direction, get proper animation (start it aswell), and set a velocity
     		myPlayer.direction(Player.RUNNING_LEFT);
     		myPlayer.getAnimation(Player.RUNNING_LEFT).start();
     		myPlayer.getBody().setLinearVelocity(new Vec2(-25.5f, myPlayer.getBody().getLinearVelocity().y));
     	}
     	else  {
+    		//We're not running anywhere atm, play idle animation.
     		if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
     			myPlayer.direction(Player.IDLE_RIGHT);
-    			myPlayer.getAnimation(Player.IDLE_RIGHT).start();
     		}
     		else {
     			myPlayer.direction(Player.IDLE_LEFT);
-    			myPlayer.getAnimation(Player.IDLE_LEFT).start();
     		}
     	}
     	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
+    		//myPlayer.isJumping(true);
     		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -60));
-    		//System.out.println("Delta: "+delta2+" - YVelocity: "+myPlayer.getBody().getLinearVelocity().y);
+    		
     	}
     	
     	if(gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
     		//Fire new bullet (if we're facing the right way)!
     		if((
     		//IF we're facing left, and mouseclick was on left side of the screen
-    		(myPlayer.direction()==1 || myPlayer.direction()==-1) && gc.getInput().getAbsoluteMouseX()<(gc.getWidth()/2)) ||
+    		(myPlayer.direction()==1 || myPlayer.direction()==-1 || myPlayer.direction()==11) && gc.getInput().getAbsoluteMouseX()<(gc.getWidth()/2)) ||
     		//OR if we're facing right, and mouseclick was on right side of the screen
-    		(myPlayer.direction()==2 || myPlayer.direction()==-2) && gc.getInput().getAbsoluteMouseX()>(gc.getWidth()/2))
-    		//Then add a new bullet with mouseX and mouseY coords.
-    		bulletList.add(new Bullet(myPlayer.getX(), myPlayer.getY(), gc.getInput().getAbsoluteMouseX(), gc.getInput().getAbsoluteMouseY()));
+    		(myPlayer.direction()==2 || myPlayer.direction()==-2 || myPlayer.direction()==22) && gc.getInput().getAbsoluteMouseX()>(gc.getWidth()/2)) {
+    			Bullet theBullet = new Bullet(myPlayer.getX(), myPlayer.getY(), gc.getInput().getAbsoluteMouseX(), gc.getInput().getAbsoluteMouseY());
+    			bulletList.add(theBullet);
+    			try {
+    				thisClient.outStream.flush();
+					thisClient.outStream.writeObject(new BFBulletPacket(theBullet.x, theBullet.y, theBullet.xSpeed, theBullet.ySpeed));
+				} catch (IOException e) {
+					System.err.println("Error sending bullet");
+				}
+    		}
     	}
     	
     	world.step(timeStep, velocityIterations, positionIterations);
-    	//bulletWorld.step(timeStep, velocityIterations, positionIterations);
-    	//System.out.println(body.getLinearVelocity().y);
     	
     	//change his/my location and/or bullets.
         player1.updateLoc();
@@ -211,6 +219,7 @@ public class BlasticFantastic extends BasicGame {
         viewport.setX((myPlayer.getX()*8));
         viewport.setY((myPlayer.getY()*8));
         
+        //System.out.println(myPlayer.isFiring());
         
     }
  
@@ -221,6 +230,7 @@ public class BlasticFantastic extends BasicGame {
     	g.translate(512-viewport.getX(), 300-viewport.getY());
     	map1.render(0, 0);
     	g.setClip(0, 0, 1280, 720);
+    	
     	g.drawAnimation(player1.getAnimation(player1.direction()), player1.getX()*8, player1.getY()*8);
     	g.drawAnimation(player2.getAnimation(player2.direction()), player2.getX()*8, player2.getY()*8);
     	

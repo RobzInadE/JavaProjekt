@@ -1,5 +1,6 @@
 package net.whdm.blasticfantastic;
 
+
 import java.util.Vector;
 
 import org.jbox2d.collision.shapes.CircleShape;
@@ -17,7 +18,7 @@ public class Bullet {
 	private Body body;
 	private int d, mx, my;
 	public Vector<Long> tempInfo;
-	private float xSpeed, ySpeed;
+	public float xSpeed, ySpeed;
 	
 	public Bullet(float x, float y, int mouseX, int mouseY) throws SlickException {
 		this.x = x;
@@ -34,12 +35,14 @@ public class Bullet {
 		xSpeed = (float) (startingSpeed * Math.cos(radian));
 		ySpeed = (float) (startingSpeed * Math.sin(radian));
 		
+		//Set init pos to x+(horizontal offset), y = y+vertical offset to not interfer with the characters physic body.
+		this.x = this.x+rx;
+		this.y = this.y+1.75f;
 		this.bulletImg = new Image("data/bullet.png");
 		// Dynamic Body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
-        //Set init pos to x+(horizontal offset), y = y+vertical offset to not interfer with the characters physic body.
-        bodyDef.position.set(this.x+rx, this.y+1.75f);
+        bodyDef.position.set(this.x, this.y);
         bodyDef.bullet = true;
         this.body = BlasticFantastic.world.createBody(bodyDef);
         CircleShape dynamicBox = new CircleShape();
@@ -48,18 +51,38 @@ public class Bullet {
         fixtureDef.shape = dynamicBox;
         
         this.body.createFixture(fixtureDef);
-        this.body.setUserData(tempInfo);
         this.body.setFixedRotation(true);
         this.body.setGravityScale(0.05f);
         this.body.setLinearVelocity(new Vec2(xSpeed, ySpeed));
         
 	}
 	
+	public Bullet(float x, float y, float xs, float ys) {
+		try {
+			this.bulletImg = new Image("data/bullet.png");
+		} catch (SlickException e) {
+			System.err.println(e.getMessage());
+		}
+		// Dynamic Body
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyType.DYNAMIC;
+        bodyDef.position.set(x, y);
+        bodyDef.bullet = true;
+        this.body = BlasticFantastic.world.createBody(bodyDef);
+        CircleShape dynamicBox = new CircleShape();
+        dynamicBox.m_radius = 0.125f;
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = dynamicBox;
+        
+        this.body.createFixture(fixtureDef);
+        this.body.setFixedRotation(true);
+        this.body.setGravityScale(0.05f);
+        this.body.setLinearVelocity(new Vec2(xs, ys));
+	}
+	
 	public Body getBody() {
 		return this.body;
 	}
-
-	
 	public Image getImg() {
 		return this.bulletImg;
 	}

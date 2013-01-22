@@ -12,24 +12,22 @@ import org.newdawn.slick.Animation;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-public class Player implements Serializable {
+public class Player {
 	private volatile float x;
 	private volatile float y;
-	private int idleTiles;
-	private int runningTiles;
-	private int tileWidth;
-	private int tileHeight;
+	private int tileWidth, tileHeight, runningTiles, idleTiles, gunTiles;
 	private String spritesheet;
 	private SpriteSheet sprites;
-	private Animation player_running_left, player_running_right, player_idle_left, player_idle_right;
+	private Animation player_running_left, player_running_right, player_idle_left, player_idle_right, player_shooting_right, player_shooting_left;
 	private int delay;
-	public static int IDLE_LEFT = -1, IDLE_RIGHT = -2, RUNNING_LEFT = 1, RUNNING_RIGHT = 2;
+	public static int IDLE_LEFT = -1, IDLE_RIGHT = -2, RUNNING_LEFT = 1, RUNNING_RIGHT = 2, SHOOT_LEFT = 11, SHOOT_RIGHT = 22;
 	private int lastDirection = IDLE_LEFT;
 	private volatile Body body;
 	private volatile BodyDef bodyDef;
 	private volatile FixtureDef fixtureDef;
+	public volatile boolean isJumping, isFiring = false;
 	
-	Player(float x, float y, int idleTiles, int runningTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
+	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;
 		this.y = y;
 		this.runningTiles = runningTiles;
@@ -37,6 +35,7 @@ public class Player implements Serializable {
 		this.spritesheet = spritesheet;
 		this.tileWidth = tileWidth;
 		this.tileHeight = tileHeight;
+		this.gunTiles = gunTiles;
 		this.delay = delay;
 		this.sprites = new SpriteSheet(this.spritesheet,this.tileWidth,this.tileHeight);
 		
@@ -44,6 +43,8 @@ public class Player implements Serializable {
 		this.player_idle_right = new Animation();
 		this.player_running_right = new Animation();
 		this.player_running_left = new Animation();
+		this.player_shooting_right = new Animation();
+		this.player_shooting_left = new Animation();
 		
 		//Create idle animation
 		for (int frame=0;frame<this.idleTiles;frame++) {
@@ -66,6 +67,19 @@ public class Player implements Serializable {
 			player_running_left.addFrame(sprites.getSprite(frame,2), this.delay);
 		}
 		
+		//Create gun animation right
+		for(int frame=0;frame<this.gunTiles;frame++) {
+			player_shooting_right.addFrame(sprites.getSprite(frame,3), 30);
+		}
+		
+		//Create gun animation left (Mirrored.)
+		for(int frame=this.gunTiles-1;frame>0;frame--) {
+			player_shooting_left.addFrame(sprites.getSprite(frame,4), 30);
+		}
+		
+		player_shooting_left.setLooping(false);
+		player_shooting_right.setLooping(false);
+		
 		// Dynamic Body
         bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
@@ -83,6 +97,7 @@ public class Player implements Serializable {
 		
 	}
 	public Animation getAnimation(int state) {
+		//Get proper animation
 		if(state==RUNNING_RIGHT) {
 			return this.player_running_right;
 		}
@@ -96,40 +111,75 @@ public class Player implements Serializable {
 		else if(state==IDLE_LEFT) {
 			return this.player_idle_left;
 		}
-		
+		else if(state==SHOOT_LEFT) {
+			return this.player_shooting_left;
+		}
+		else if(state==SHOOT_RIGHT) {
+			return this.player_shooting_right;
+		}
+		//Invalid input? Return empty animation.
 		else {
 			return new Animation();
 		}
 	}
 	
+	public boolean isFiring() {
+		return this.isFiring;
+	}
+	
+	public void isFiring(boolean x) {
+		this.isFiring = x;
+	}
+	
+	public boolean isJumping() {
+		return this.isJumping;
+	}
+	
+	public void isJumping(boolean x) {
+		this.isJumping = x;
+	}
+	//Get direction
 	public int direction() {
 		return this.lastDirection;
 	}
+	
+	//Set direction
 	public void direction(int x) {
 		lastDirection = x;
 	}
 	
+	//Get physics body of this object
 	public Body getBody() {
 		return this.body;
 	}
 	
+	//Get the physics definitions for this object
 	public FixtureDef getFixture() {
 		return fixtureDef;
 	}
+	
+	//Set objects coordinates to physicsworld coordinates on each frameupdate
 	public void updateLoc() {
 		x = this.body.getPosition().x;
 		y = this.body.getPosition().y;
 	}
+	
+	//Get xpos
 	public float getX() {
 		return x;
 	}
+	
+	//Get ypos
 	public float getY() {
 		return y;
 	}
 	
+	//Get  both x and y pos
 	public Vec2 getPos() {
 		return new Vec2(x, y);
 	}
+	
+	//Set both x and y pos.
 	public void setPos(Vec2 v) {
 		this.x = v.x;
 		this.y = v.y;
