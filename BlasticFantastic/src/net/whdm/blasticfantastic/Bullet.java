@@ -39,30 +39,25 @@ public class Bullet {
 		this.x = this.x+rx;
 		this.y = this.y+1.75f;
 		this.bulletImg = new Image("data/bullet.png");
-		// Dynamic Body
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyType.DYNAMIC;
-        bodyDef.position.set(this.x, this.y);
-        bodyDef.bullet = true;
-        this.body = BlasticFantastic.world.createBody(bodyDef);
-        CircleShape dynamicBox = new CircleShape();
-        dynamicBox.m_radius = 0.125f;
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = dynamicBox;
-        
-        this.body.createFixture(fixtureDef);
-        this.body.setFixedRotation(true);
-        this.body.setGravityScale(0.05f);
-        this.body.setLinearVelocity(new Vec2(xSpeed, ySpeed));
+		createPhys();
         
 	}
 	
 	public Bullet(float x, float y, float xs, float ys) {
+		this.x = x;
+		this.y = y;
+		this.xSpeed = xs;
+		this.ySpeed = ys;
+		createPhys();
 		try {
 			this.bulletImg = new Image("data/bullet.png");
 		} catch (SlickException e) {
 			System.err.println(e.getMessage());
 		}
+		
+	}
+	
+	public void createPhys() {
 		// Dynamic Body
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DYNAMIC;
@@ -73,11 +68,10 @@ public class Bullet {
         dynamicBox.m_radius = 0.125f;
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = dynamicBox;
-        
         this.body.createFixture(fixtureDef);
         this.body.setFixedRotation(true);
         this.body.setGravityScale(0.05f);
-        this.body.setLinearVelocity(new Vec2(xs, ys));
+        this.body.setLinearVelocity(new Vec2(xSpeed, ySpeed));
 	}
 	
 	public Body getBody() {
