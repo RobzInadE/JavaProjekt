@@ -153,6 +153,14 @@ public class BlasticFantastic extends BasicGame {
         
     }
     
+    public static void createBullet(float x, float y, float xspeed, float yspeed) {
+    	try {
+			bulletList.add(new Bullet(x, y, xspeed, yspeed));
+		} catch (SlickException e) {
+			System.err.println(e.getMessage());
+		}
+    }
+    
     public Player getMyPlayer() {
     	return myPlayer;
     }

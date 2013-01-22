@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import org.jbox2d.common.Vec2;
+import org.newdawn.slick.SlickException;
 
 public class BFClient implements Runnable {
 
@@ -54,8 +55,7 @@ public class BFClient implements Runnable {
 				}
 				else if(o instanceof BFBulletPacket) {
 					BFBulletPacket bp = (BFBulletPacket) o;
-					Bullet b = new Bullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
-					BlasticFantastic.bulletList.add(b);
+					BlasticFantastic.createBullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
 				}
 			} catch (ClassNotFoundException e) {
 				System.err.println("Couldn't read "+e.getMessage());

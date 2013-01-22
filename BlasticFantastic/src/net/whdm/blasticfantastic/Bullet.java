@@ -43,17 +43,13 @@ public class Bullet {
         
 	}
 	
-	public Bullet(float x, float y, float xs, float ys) {
+	public Bullet(float x, float y, float xs, float ys) throws SlickException {
 		this.x = x;
 		this.y = y;
 		this.xSpeed = xs;
 		this.ySpeed = ys;
 		createPhys();
-		try {
-			this.bulletImg = new Image("data/bullet.png");
-		} catch (SlickException e) {
-			System.err.println(e.getMessage());
-		}
+		this.bulletImg = new Image("data/bullet.png");
 		
 	}
 	
