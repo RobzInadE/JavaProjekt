@@ -34,6 +34,7 @@ public class BFClient implements Runnable {
 			inStream = new ObjectInputStream(thisSocket.getInputStream());
 			myPlayer = p1;
 			hisPlayer = p2;
+			new BFClientReceiver(inStream, hisPlayer);
 			new Thread(this).start();
 		} catch (IOException e) {
 			System.err.println("Can't initiate input/output streams to socket");
@@ -49,28 +50,12 @@ public class BFClient implements Runnable {
 		//Thread
 		while(true) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(50);
 				outStream.flush();
 				outStream.writeObject(new BFPlayerPacket(thisSocket.getInetAddress().toString(), myPlayer.getPos(), myPlayer.direction(), myPlayer.getBody().getLinearVelocity().x, myPlayer.getBody().getLinearVelocity().y));
-				Object o;
-				o = inStream.readObject();
-				if(o instanceof BFPlayerPacket) {
-					BFPlayerPacket bfp = (BFPlayerPacket) o;
-					hisPlayer.setPos(bfp.getPos());
-					hisPlayer.getBody().setLinearVelocity(new Vec2(bfp.vspeed(), bfp.hspeed()));
-					hisPlayer.direction(bfp.direction());
-				}
-				else if(o instanceof BFBulletPacket) {
-					BFBulletPacket bp = (BFBulletPacket) o;
-					BlasticFantastic.addBullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
-				}
-				o = null;
-			} catch (ClassNotFoundException e) {
-				System.err.println("Couldn't read "+e.getMessage());
 			} catch (InterruptedException e) {
 				System.err.println("Couldn't read "+e.getMessage());
 			} catch (IOException e) {
-				
 				System.err.println("Can't send/write to socket!");
 			}
 		}
