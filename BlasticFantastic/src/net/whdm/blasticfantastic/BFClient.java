@@ -24,7 +24,6 @@ public class BFClient implements Runnable {
 		try {
 			System.out.println("Connecting to "+server+" port "+port);
 			thisSocket = new Socket(server, port);
-			thisSocket.setTcpNoDelay(true);
 			System.out.println("Connected!");
 		} catch (IOException e) {
 			System.err.println("Can't connect! " + e.getMessage());
