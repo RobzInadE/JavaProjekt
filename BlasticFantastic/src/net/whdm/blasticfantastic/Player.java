@@ -24,7 +24,6 @@ public class Player {
 	private volatile BodyDef bodyDef;
 	private volatile FixtureDef fixtureDef;
 	public volatile boolean isJumping, isFiring = false;
-	public 
 	
 	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
 		this.x = x;

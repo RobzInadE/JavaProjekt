@@ -43,7 +43,7 @@ public class BlasticFantastic extends BasicGame {
     public volatile static Vec2 upcbcoords = null;
     public volatile static Vec2 upcbspeed = null;
     
-    private volatile static ArrayList<Body> bulletsToRemove;
+    private volatile ArrayList<Body> bulletsToRemove;
     
     private BFClient thisClient;
     
@@ -246,7 +246,7 @@ public class BlasticFantastic extends BasicGame {
         
     }
     
-    public static void removeBody(Body s) {
+    public void removeBody(Body s) {
     	bulletsToRemove.add(s);
     }
  

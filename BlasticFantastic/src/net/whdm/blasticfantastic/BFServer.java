@@ -2,7 +2,6 @@ package net.whdm.blasticfantastic;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 
 public class BFServer {
 
