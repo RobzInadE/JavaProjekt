@@ -56,8 +56,8 @@ public class BFClientReceiver implements Runnable{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//We'll treat this as a disconnect.
+				System.out.println("CLIENT DISCONNECTED");
 			}
 		}
 	}
