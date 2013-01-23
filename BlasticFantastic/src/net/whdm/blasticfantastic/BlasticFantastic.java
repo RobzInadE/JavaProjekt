@@ -228,6 +228,10 @@ public class BlasticFantastic extends BasicGame {
     		else chatUp = true;
     		chatMessage = "";
     	}
+    	
+    	if(myPlayer.getHealth()<0) {
+    		myPlayer.reset();
+    	}
     	//Can only move if chat is closed.
     	if(!chatUp) {
     		//Did we press "D"?
@@ -340,7 +344,7 @@ public class BlasticFantastic extends BasicGame {
     public static void removeBody(Body obj, Body bullet) {
     	if(obj==myPlayer.getBody()) {
     		//We've been hit.
-    		myPlayer.takeDamage(0.05f);
+    		myPlayer.takeDamage(0.09f);
     	}
     	bulletsToRemove.add(bullet);
     }
