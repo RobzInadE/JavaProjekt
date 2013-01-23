@@ -199,25 +199,25 @@ public class BlasticFantastic extends BasicGame {
     		if(chatUp) {
     			//Flush and send chatmessage.
     			if(chatMessage.trim().length()>0 && chatMessage.trim()!=null) {
-    				//Command found
     				if(chatMessage.trim().substring(0, 1).equals("/") && chatMessage.trim().length()>2 && isHosting) {
+    					//Command found
     					manageCommand(chatMessage.trim().substring(1));
     				}
-    				myPlayer.setChatMessage(chatMessage);
-    				myPlayer.setTimer(false, 0);
-    				try {
-    					this.thisClient.outStream.flush();
-    					this.thisClient.outStream.writeObject(new ChatMessage(chatMessage.trim()));
-    					chatUp = false;
-    				} catch (IOException e) {
-    					System.err.println("Can't send chatmessage");
-    					chatUp = false;
+    				else {    					
+    					myPlayer.setChatMessage(chatMessage);
+    					myPlayer.setTimer(false, 0);
+    					try {
+    						this.thisClient.outStream.flush();
+    						this.thisClient.outStream.writeObject(new ChatMessage(chatMessage.trim()));
+    						chatUp = false;
+    					} catch (IOException e) {
+    						System.err.println("Can't send chatmessage");
+    						chatUp = false;
+    					}
     				}
     			}
-    			else {
-    				chatUp = false;
-    				chatMessage = "";
-    			}
+    			chatUp = false;
+    			chatMessage = "";
     		}
     		else chatUp = true;
     		chatMessage = "";
