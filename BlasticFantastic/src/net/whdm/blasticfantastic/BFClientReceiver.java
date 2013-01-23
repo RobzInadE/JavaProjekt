@@ -37,6 +37,11 @@ public class BFClientReceiver implements Runnable{
 					BFBulletPacket bp = (BFBulletPacket) o;
 					BlasticFantastic.addBullet(bp.getX(), bp.getY(), bp.getXSpeed(), bp.getYSpeed());
 				}
+				else if(o instanceof ChatMessage) {
+					ChatMessage cm = (ChatMessage) o;
+					hisPlayer.setChatMessage(cm.getMessage());
+					hisPlayer.setTimer(false, 0);
+				}
 				o = null;
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

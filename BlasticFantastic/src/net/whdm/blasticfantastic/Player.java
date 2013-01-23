@@ -7,6 +7,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 import org.newdawn.slick.Animation;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
@@ -29,6 +30,10 @@ public class Player {
 	private volatile BodyDef bodyDef;
 	private volatile FixtureDef fixtureDef;
 	public volatile boolean isJumping, isFiring = false;
+	private Image bubble;
+	//Chat message
+	private volatile String cm;
+	private int timer = 3000;
 	
 	//Constructor. We specify how many of the tiles are running, gunning, or just idling.
 	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
@@ -42,6 +47,7 @@ public class Player {
 		this.gunTiles = gunTiles;
 		this.delay = delay;
 		this.sprites = new SpriteSheet(this.spritesheet,this.tileWidth,this.tileHeight);
+		this.bubble = new Image("data/chatbubble.png");
 		
 		//Create new animations.
 		this.player_idle_left = new Animation();
@@ -133,6 +139,27 @@ public class Player {
 			return new Animation();
 		}
 	}
+	
+	//Set chat message
+	public void setChatMessage(String cm) {
+		this.cm = cm;
+	}
+	
+	public String getChatMessage() {
+		return cm;
+	}
+	public Image getImg() {
+		return this.bubble;
+	}
+	
+	public void setTimer(boolean increment, int i) {
+		if(!increment) this.timer = i;
+		else this.timer += i;
+	}
+	public int getTimer() {
+		return this.timer;
+	}
+	
 	//Booleans
 	public boolean isFiring() {
 		return this.isFiring;

@@ -11,6 +11,7 @@ import org.jbox2d.dynamics.FixtureDef;
 import org.jbox2d.dynamics.World;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
@@ -46,6 +47,9 @@ public class BlasticFantastic extends BasicGame {
     public int velocityIterations, positionIterations;
     public static volatile ArrayList<Bullet> bulletList;
     public static Random random = new Random(System.currentTimeMillis());
+    public volatile static boolean chatUp = false;
+    public static String chatMessage = "";
+    private BFKeyListener keylistener = new BFKeyListener();
     
     //Server variables,
     private String status;
@@ -169,6 +173,8 @@ public class BlasticFantastic extends BasicGame {
         //Add a new collision listener to our world.
         world.setContactListener(new BFContactListener());
         
+        //Add Keylistener to our GameContainer.
+        gc.getInput().addKeyListener(keylistener);
         
         //Physics debug draw. (DEPRECATED. I'm using JBox2d-2.3.0 SNAPSHOT, this debugdraw hasn't been updated for it yet)
         
@@ -182,59 +188,86 @@ public class BlasticFantastic extends BasicGame {
     @Override
     public void update(GameContainer gc, int delta) throws SlickException {
 
-    	//Did we press "D"?
-    	if (gc.getInput().isKeyDown(Input.KEY_D)) {
-    		//Run right, set direction, get proper animation (start it as well), and set a velocity
-    		myPlayer.direction(Player.RUNNING_RIGHT);
-    		myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
-    		//"Push" our player with a force of 25.5 in x-direction.
-    		//NOTE: This will also enable you to "wallclimb". Haven't figured out how to solve it yet, so... we'll call it a feature.
-    		myPlayer.getBody().setLinearVelocity(new Vec2(25.5f, myPlayer.getBody().getLinearVelocity().y));
-    		
-    	}
-    	//Did we press "A"?
-    	else if (gc.getInput().isKeyDown(Input.KEY_A)) {
-    		//Run left, set direction, get proper animation (start it as well), and set a velocity
-    		myPlayer.direction(Player.RUNNING_LEFT);
-    		myPlayer.getAnimation(Player.RUNNING_LEFT).start();
-    		//"Push" our player with a force of -25.5 in x-direction. (Left)
-    		//NOTE: This will also enable you to "wallclimb". Haven't figured out how to solve it yet, so... we'll call it a feature.
-    		myPlayer.getBody().setLinearVelocity(new Vec2(-25.5f, myPlayer.getBody().getLinearVelocity().y));
-    	}
-    	//Did we press... nothing?
-    	else  {
-    		//We're not running anywhere atm, play idle animation.
-    		if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
-    			myPlayer.direction(Player.IDLE_RIGHT);
-    		}
-    		else {
-    			myPlayer.direction(Player.IDLE_LEFT);
-    		}
-    	}
-    	//We want to JUMP!!
-    	if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
-    		myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -60));
-    		
-    	}
+    	hisPlayer.setTimer(true, delta);
+    	myPlayer.setTimer(true, delta);
     	
-    	//We want to SHOOOOOT!
-    	if(gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-    		//Fire new bullet (if we're facing the right way)!
-    		if((
-    		//IF we're facing left, and mouseclick was on left side of the screen
-    		(myPlayer.direction()==Player.RUNNING_LEFT || myPlayer.direction()==Player.IDLE_LEFT || myPlayer.direction()==Player.SHOOT_LEFT) && gc.getInput().getAbsoluteMouseX()<(gc.getWidth()/2)) ||
-    		//OR if we're facing right, and mouseclick was on right side of the screen
-    		(myPlayer.direction()==Player.RUNNING_RIGHT || myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.SHOOT_RIGHT) && gc.getInput().getAbsoluteMouseX()>(gc.getWidth()/2)) {
-    			//Create the bullet. And add it to our arraylist.
-    			Bullet theBullet = new Bullet(myPlayer.getX(), myPlayer.getY(), gc.getInput().getAbsoluteMouseX(), gc.getInput().getAbsoluteMouseY());
-    			bulletList.add(theBullet);
-    			try {
-    				//Flush and send to server.
-    				thisClient.outStream.flush();
-					thisClient.outStream.writeObject(new BFBulletPacket(theBullet.x, theBullet.y, theBullet.xSpeed, theBullet.ySpeed));
-				} catch (IOException e) {
-					System.err.println("Error sending bullet");
-				}
+    	if(gc.getInput().isKeyPressed(Input.KEY_ENTER)) {
+    		if(chatUp) {
+    			//Flush and send chatmessage.
+    			if(chatMessage.trim().length()>0 && chatMessage.trim()!=null) {
+    				myPlayer.setChatMessage(chatMessage);
+    				myPlayer.setTimer(false, 0);
+    				try {
+    					this.thisClient.outStream.flush();
+    					this.thisClient.outStream.writeObject(chatMessage.trim());
+    					chatUp = false;
+    				} catch (IOException e) {
+    					System.err.println("Can't send chatmessage");
+    					chatUp = false;
+    				}
+    			}
+    		}
+    		else chatUp = true;
+    		chatMessage = "";
+    	}
+    	if(chatUp) {
+    		
+    	}
+    	else {
+    		//Did we press "D"?
+    		if (gc.getInput().isKeyDown(Input.KEY_D)) {
+    			//Run right, set direction, get proper animation (start it as well), and set a velocity
+    			myPlayer.direction(Player.RUNNING_RIGHT);
+    			myPlayer.getAnimation(Player.RUNNING_RIGHT).start();
+    			//"Push" our player with a force of 25.5 in x-direction.
+    			//NOTE: This will also enable you to "wallclimb". Haven't figured out how to solve it yet, so... we'll call it a feature.
+    			myPlayer.getBody().setLinearVelocity(new Vec2(25.5f, myPlayer.getBody().getLinearVelocity().y));
+    			
+    		}
+    		//Did we press "A"?
+    		else if (gc.getInput().isKeyDown(Input.KEY_A)) {
+    			//Run left, set direction, get proper animation (start it as well), and set a velocity
+    			myPlayer.direction(Player.RUNNING_LEFT);
+    			myPlayer.getAnimation(Player.RUNNING_LEFT).start();
+    			//"Push" our player with a force of -25.5 in x-direction. (Left)
+    			//NOTE: This will also enable you to "wallclimb". Haven't figured out how to solve it yet, so... we'll call it a feature.
+    			myPlayer.getBody().setLinearVelocity(new Vec2(-25.5f, myPlayer.getBody().getLinearVelocity().y));
+    		}
+    		//Did we press... nothing?
+    		else  {
+    			//We're not running anywhere atm, play idle animation.
+    			if(myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.RUNNING_RIGHT) {
+    				myPlayer.direction(Player.IDLE_RIGHT);
+    			}
+    			else {
+    				myPlayer.direction(Player.IDLE_LEFT);
+    			}
+    		}
+    		//We want to JUMP!!
+    		if (gc.getInput().isKeyPressed(Input.KEY_SPACE) && Math.round(myPlayer.getBody().getLinearVelocity().y)==0) {
+    			myPlayer.getBody().setLinearVelocity(new Vec2(myPlayer.getBody().getLinearVelocity().x, -60));
+    			
+    		}
+    		
+    		//We want to SHOOOOOT!
+    		if(gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+    			//Fire new bullet (if we're facing the right way)!
+    			if((
+    				//IF we're facing left, and mouseclick was on left side of the screen
+    				(myPlayer.direction()==Player.RUNNING_LEFT || myPlayer.direction()==Player.IDLE_LEFT || myPlayer.direction()==Player.SHOOT_LEFT) && gc.getInput().getAbsoluteMouseX()<(gc.getWidth()/2)) ||
+    				//OR if we're facing right, and mouseclick was on right side of the screen
+    				(myPlayer.direction()==Player.RUNNING_RIGHT || myPlayer.direction()==Player.IDLE_RIGHT || myPlayer.direction()==Player.SHOOT_RIGHT) && gc.getInput().getAbsoluteMouseX()>(gc.getWidth()/2)) {
+    				//Create the bullet. And add it to our arraylist.
+    				Bullet theBullet = new Bullet(myPlayer.getX(), myPlayer.getY(), gc.getInput().getAbsoluteMouseX(), gc.getInput().getAbsoluteMouseY());
+    				bulletList.add(theBullet);
+    				try {
+    					//Flush and send to server.
+    					thisClient.outStream.flush();
+    					thisClient.outStream.writeObject(new BFBulletPacket(theBullet.x, theBullet.y, theBullet.xSpeed, theBullet.ySpeed));
+    				} catch (IOException e) {
+    					System.err.println("Error sending bullet");
+    				}
+    			}
     		}
     	}
     	
@@ -309,11 +342,29 @@ public class BlasticFantastic extends BasicGame {
 	    for(Bullet b : bulletList) {
 	    	b.getImg().draw(b.x*8, b.y*8);
 	    }
+	    
+	    
 	    //DEPRECATED
     	//world.drawDebugData();
 	    
-	    //Draw a status string.
+	    //Draw a status & chat string.
+	    g.setColor(Color.black);
 	    g.drawString(status, viewport.getX()+300, viewport.getY()+250);
+	    if(chatUp) {
+	    	g.setColor(Color.white);
+	    	g.drawString("> "+chatMessage+"_", viewport.getX()-500, viewport.getY()+250);
+	    }
+	    //Draw chatmessages if there are any, for a short period of time only.
+	    if(myPlayer.getTimer()<2000) {
+	    	myPlayer.getImg().draw(myPlayer.getX()*8-75, myPlayer.getY()*8-60);
+	    	g.setColor(Color.black);
+	    	g.drawString(myPlayer.getChatMessage(), myPlayer.getX()*8-67, myPlayer.getY()*8-50);
+	    }
+	    if(hisPlayer.getTimer()<2000) {
+	    	hisPlayer.getImg().draw(hisPlayer.getX()*8-75, hisPlayer.getY()*8-60);
+	    	g.setColor(Color.black);
+	    	g.drawString(hisPlayer.getChatMessage(), hisPlayer.getX()*8-67, hisPlayer.getY()*8-50);
+	    }
     	
  
     }

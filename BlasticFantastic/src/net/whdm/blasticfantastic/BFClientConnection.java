@@ -37,6 +37,7 @@ public class BFClientConnection implements Runnable{
 				Object o = this.serverIn.readObject();
 				for(BFClientConnection bfc : thisBfl.getClients()) {
 					if(who!=bfc.who) {
+						//No seriously... We don't want to send to ourselfs, this just makes everything messy.
 						bfc.serverOut.flush();
 						bfc.serverOut.writeObject(o);
 					}
