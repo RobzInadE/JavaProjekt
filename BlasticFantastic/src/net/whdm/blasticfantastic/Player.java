@@ -143,8 +143,7 @@ public class Player {
 		}
 	}
 	public void reset() {
-		this.x = 5;
-		this.y = 180;
+		this.setPos(new Vec2(5, 180));
 		this.health = 1;
 	}
 	
