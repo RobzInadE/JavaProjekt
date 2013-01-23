@@ -199,7 +199,7 @@ public class BlasticFantastic extends BasicGame {
     				myPlayer.setTimer(false, 0);
     				try {
     					this.thisClient.outStream.flush();
-    					this.thisClient.outStream.writeObject(chatMessage.trim());
+    					this.thisClient.outStream.writeObject(new ChatMessage(chatMessage.trim()));
     					chatUp = false;
     				} catch (IOException e) {
     					System.err.println("Can't send chatmessage");
