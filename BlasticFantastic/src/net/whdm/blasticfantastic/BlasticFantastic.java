@@ -50,6 +50,7 @@ public class BlasticFantastic extends BasicGame {
     public volatile static boolean chatUp = false;
     public static String chatMessage = "";
     private BFKeyListener keylistener = new BFKeyListener();
+    public static volatile boolean removeBullets = true;
     
     //Server variables,
     private String status;
@@ -57,6 +58,7 @@ public class BlasticFantastic extends BasicGame {
     private int port = 50001;
     private boolean multiplayer = false;
     private BFClient thisClient;
+    private boolean isHosting;
     
     //2 different Arraylist for bullets.
     private volatile static ArrayList<Body> bulletsToRemove;
@@ -128,6 +130,7 @@ public class BlasticFantastic extends BasicGame {
         //If we want multiplayer, connect to the server.
         if(multiplayer) {
         	//Connecting to someone
+        	isHosting = false;
         	myPlayer = player2;
         	hisPlayer = player1;
         	thisClient = new BFClient(myPlayer, hisPlayer, host, port);
@@ -135,6 +138,7 @@ public class BlasticFantastic extends BasicGame {
         }
         else {
         	//Connecting to ourselfs
+        	isHosting = true;
         	myPlayer = player1;
         	hisPlayer = player2;
         	new BFServer(true);
@@ -195,6 +199,10 @@ public class BlasticFantastic extends BasicGame {
     		if(chatUp) {
     			//Flush and send chatmessage.
     			if(chatMessage.trim().length()>0 && chatMessage.trim()!=null) {
+    				//Command found
+    				if(chatMessage.trim().substring(0, 1).equals("/") && chatMessage.trim().length()>2 && isHosting) {
+    					manageCommand(chatMessage.trim().substring(1));
+    				}
     				myPlayer.setChatMessage(chatMessage);
     				myPlayer.setTimer(false, 0);
     				try {
@@ -206,14 +214,16 @@ public class BlasticFantastic extends BasicGame {
     					chatUp = false;
     				}
     			}
+    			else {
+    				chatUp = false;
+    				chatMessage = "";
+    			}
     		}
     		else chatUp = true;
     		chatMessage = "";
     	}
-    	if(chatUp) {
-    		
-    	}
-    	else {
+    	//Can only move if chat is closed.
+    	if(!chatUp) {
     		//Did we press "D"?
     		if (gc.getInput().isKeyDown(Input.KEY_D)) {
     			//Run right, set direction, get proper animation (start it as well), and set a velocity
@@ -324,6 +334,24 @@ public class BlasticFantastic extends BasicGame {
     public static void removeBody(Body s) {
     	bulletsToRemove.add(s);
     }
+    
+    public boolean isHosting() {
+    	return this.isHosting;
+    }
+    
+    public void manageCommand(String command) {
+    	if(command!=null && command.length()>0) {
+    		//Switch-case with strings forbidden pre JDK 1.7
+    		if(command.equals("iwantpeace 1")) {
+    			this.removeBullets = false;
+    			status = "Peacemode on";
+    		}
+    		else if(command.equals("iwantpeace 0")) {
+    			this.removeBullets = true;
+    			status = "Local server online";
+    		}
+    	}
+    }
  
     public void render(GameContainer gc, Graphics g) throws SlickException {
     	//Make the camera (viewport) "Point" at the right stuff.
@@ -348,7 +376,7 @@ public class BlasticFantastic extends BasicGame {
     	//world.drawDebugData();
 	    
 	    //Draw a status & chat string.
-	    g.setColor(Color.black);
+	    g.setColor(Color.white);
 	    g.drawString(status, viewport.getX()+300, viewport.getY()+250);
 	    if(chatUp) {
 	    	g.setColor(Color.white);

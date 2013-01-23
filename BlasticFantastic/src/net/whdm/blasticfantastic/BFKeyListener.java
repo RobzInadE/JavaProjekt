@@ -40,7 +40,7 @@ public class BFKeyListener implements KeyListener{
 			if(kId==Input.KEY_BACK && BlasticFantastic.chatMessage.length()>0 && BlasticFantastic.chatMessage!=null){
 				BlasticFantastic.chatMessage = BlasticFantastic.chatMessage.substring(0, BlasticFantastic.chatMessage.length()-1);
 			}
-			else if(BlasticFantastic.chatMessage.length()<50) {
+			else if(BlasticFantastic.chatMessage.length()<20) {
 				BlasticFantastic.chatMessage = BlasticFantastic.chatMessage+kChar;
 			}
 		}

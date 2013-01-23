@@ -21,12 +21,14 @@ public class BFContactListener implements ContactListener {
 			if(s.getBody()==c.getFixtureB().getBody()) {
 				//Found colliding bullet
 				//Remove it's body from phys world
-				BlasticFantastic.removeBody(s.getBody());
-				toRemove = s;
+				if(BlasticFantastic.removeBullets) {
+					BlasticFantastic.removeBody(s.getBody());
+					toRemove = s;
+				}
 			}
 		}
 		//And remove graphical version of the bullet in question.
-		BlasticFantastic.bulletList.remove(toRemove);
+		if(toRemove != null) BlasticFantastic.bulletList.remove(toRemove);
 	}
 	
 	//We won't be using these 3 methods.
