@@ -42,6 +42,15 @@ public class BFClientReceiver implements Runnable{
 					hisPlayer.setChatMessage(cm.getMessage());
 					hisPlayer.setTimer(false, 0);
 				}
+				else if(o instanceof BFAdminCommand) {
+					BFAdminCommand ac = (BFAdminCommand) o;
+					if(ac.getCommand()==BFAdminCommand.IWANTPEACE0) {
+						BlasticFantastic.removeBullets = true;
+					}
+					else if(ac.getCommand()==BFAdminCommand.IWANTPEACE1) {
+						BlasticFantastic.removeBullets = false;
+					}
+				}
 				o = null;
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

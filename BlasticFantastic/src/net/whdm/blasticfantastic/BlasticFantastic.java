@@ -342,13 +342,24 @@ public class BlasticFantastic extends BasicGame {
     public void manageCommand(String command) {
     	if(command!=null && command.length()>0) {
     		//Switch-case with strings forbidden pre JDK 1.7
+    		Integer id = null;
     		if(command.equals("iwantpeace 1")) {
-    			this.removeBullets = false;
-    			status = "Peacemode on";
+				this.removeBullets = false;
+				status = "Peacemode on";
+				id = 1;
     		}
     		else if(command.equals("iwantpeace 0")) {
     			this.removeBullets = true;
     			status = "Local server online";
+    			id = -1;
+    		}
+    		if(id!=null) {
+    			try {
+					thisClient.outStream.flush();
+					thisClient.outStream.writeObject(new BFAdminCommand(id));
+				} catch (IOException e) {
+					System.err.println("ERROR sending admin command");
+				}
     		}
     	}
     }
