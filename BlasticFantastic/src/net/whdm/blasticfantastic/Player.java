@@ -34,6 +34,8 @@ public class Player {
 	//Chat message
 	private volatile String cm;
 	private int timer = 3000;
+	private float health;
+	
 	
 	//Constructor. We specify how many of the tiles are running, gunning, or just idling.
 	Player(float x, float y, int idleTiles, int runningTiles, int gunTiles, int tileWidth, int tileHeight, String spritesheet, int delay) throws SlickException {
@@ -48,6 +50,7 @@ public class Player {
 		this.delay = delay;
 		this.sprites = new SpriteSheet(this.spritesheet,this.tileWidth,this.tileHeight);
 		this.bubble = new Image("data/chatbubble.png");
+		this.health = 1;
 		
 		//Create new animations.
 		this.player_idle_left = new Animation();
@@ -138,6 +141,18 @@ public class Player {
 		else {
 			return new Animation();
 		}
+	}
+	public void reset() {
+		this.x = 5;
+		this.y = 180;
+		this.health = 1;
+	}
+	
+	public void takeDamage(float d) {
+		this.health -= d;
+	}
+	public float getHealth() {
+		return this.health;
 	}
 	
 	//Set chat message

@@ -22,7 +22,7 @@ public class BFContactListener implements ContactListener {
 				//Found colliding bullet
 				//Remove it's body from phys world
 				if(BlasticFantastic.removeBullets) {
-					BlasticFantastic.removeBody(s.getBody());
+					BlasticFantastic.removeBody(c.getFixtureA().getBody(), s.getBody());
 					toRemove = s;
 				}
 			}

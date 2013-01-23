@@ -57,7 +57,8 @@ public class BFClientReceiver implements Runnable{
 				e.printStackTrace();
 			} catch (IOException e) {
 				//We'll treat this as a disconnect.
-				System.out.println("CLIENT DISCONNECTED");
+				System.out.println("HOST DISCONNECTED");
+				System.exit(1);
 			}
 		}
 	}

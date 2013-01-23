@@ -14,6 +14,7 @@ import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
@@ -36,7 +37,8 @@ public class BlasticFantastic extends BasicGame {
     Rectangle viewport;
     public volatile Player player1;
     public volatile Player player2;
-    public volatile Player myPlayer, hisPlayer;
+    public volatile static Player myPlayer;
+	public volatile static Player hisPlayer;
     private TiledMap map1;
     int x = 100;
     int y = 100;
@@ -51,6 +53,8 @@ public class BlasticFantastic extends BasicGame {
     public static String chatMessage = "";
     private BFKeyListener keylistener = new BFKeyListener();
     public static volatile boolean removeBullets = true;
+    
+    private Image hpbar;
     
     //Server variables,
     private String status;
@@ -126,6 +130,8 @@ public class BlasticFantastic extends BasicGame {
         //Player 2
         player2 = new Player(15, 180, 4, 12, 11, 40, 40, "data/temp2.png", 50);
         player2.getAnimation(Player.IDLE_LEFT).start();
+        
+        hpbar = new Image("data/healthbar.png");
         
         //If we want multiplayer, connect to the server.
         if(multiplayer) {
@@ -316,7 +322,7 @@ public class BlasticFantastic extends BasicGame {
         viewport.setY((myPlayer.getY()*8));
         
     }
-    public Player getMyPlayer() {
+    public static Player getMyPlayer() {
     	return myPlayer;
     }
     
@@ -331,8 +337,12 @@ public class BlasticFantastic extends BasicGame {
     }
     
     //Remove bullet, this basically adds it to an arraylist.
-    public static void removeBody(Body s) {
-    	bulletsToRemove.add(s);
+    public static void removeBody(Body obj, Body bullet) {
+    	if(obj==myPlayer.getBody()) {
+    		//We've been hit.
+    		myPlayer.takeDamage(0.05f);
+    	}
+    	bulletsToRemove.add(bullet);
     }
     
     public boolean isHosting() {
@@ -405,6 +415,12 @@ public class BlasticFantastic extends BasicGame {
 	    	g.drawString(hisPlayer.getChatMessage(), hisPlayer.getX()*8-67, hisPlayer.getY()*8-50);
 	    }
     	
+	    //Draw hp bar
+	    g.setColor(new Color(0, 195, 0));
+	    Rectangle hpb = new Rectangle(viewport.getX()-436, viewport.getY()-289, 198*myPlayer.getHealth(), 26);
+	    g.fill(hpb);
+	    //Hpbar background img.
+	    g.drawImage(hpbar, viewport.getX()-450, viewport.getY()-295);
  
     }
     
