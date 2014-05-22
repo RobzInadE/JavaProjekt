@@ -6,6 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,8 +27,10 @@ import javax.swing.JTextField;
 public class StartBlasticFantastic {
 	
 	public static void main(String[] args) {
-		
-		//New JFrame
+
+        System.setProperty("org.lwjgl.librarypath", new File("natives").getAbsolutePath());
+
+        //New JFrame
 		JFrame window = new JFrame("BlasticFantastic v 0.1 Launcher");
 		final JDialog connection = new JDialog();
 		window.setSize(500, 400);
